@@ -1,4 +1,6 @@
-(function( $ ) {
+"use strict";
+
+(function(window, $, undefined) {
     function init() {
         
     }
@@ -54,4 +56,4 @@
     };
 
     init();
-})(jQuery);
+})(this, jQuery);
