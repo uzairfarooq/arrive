@@ -5,40 +5,42 @@
         
     }
 
-    $.fn.create = function(selector, callback) {
-        var target = this[0];
-        if (target == document || target == window)
-            target = document.body;
+    function onMutation(mutations, selectorToCheck, callback) {
+        mutations.forEach(function( mutation ) {
+            var newNodes    = mutation.addedNodes, 
+                $targetNode = $(mutation.target);
 
-        var $target = $(target);
-
-        function onMutation(mutations) {
-            mutations.forEach(function( mutation ) {
-                var newNodes            = mutation.addedNodes, 
-                    $targetNode          = $(mutation.target);
-
-                if( newNodes !== null && newNodes.length > 0 ) { // If there are new nodes added
-                    var $nodes = $( newNodes ); // jQuery set
-                    $nodes.each(function() {
-                        var $node = $( this );
-                        if( $node.is(selector) && !$node.data("cr-create-fired")) {
-                            $node.data("cr-create-fired", true);
-                            callback.call($node[0]);
-                        }
-                    });
-                }
-                else if (mutation.type === "attributes" && mutation.attributeName == "class") {
-                    //$matchingElems = $(selector, $target);
-                    if( $targetNode.is(selector) && !$targetNode.data("cr-create-fired")) {
-                        $targetNode.data("cr-create-fired", true);
-                        callback.call($targetNode[0]);
+            // If new nodes are added
+            if( newNodes !== null && newNodes.length > 0 ) {
+                // check each new node if it matches the selector
+                for (var i=0, node; node = newNodes[i]; i++) {
+                    var $node = $(node);
+                    if ($node.is(selectorToCheck)) {
+                        callback.call($node[0]);
                     }
                 }
-            });
-        }
+            }
+            /*else if (mutation.type === "attributes" && mutation.attributeName == "class") {
+                //$matchingElems = $(selectorToCheck, $target);
+                if( $targetNode.is(selectorToCheck) && !$targetNode.data("cr-create-fired")) {
+                    $targetNode.data("cr-create-fired", true);
+                    callback.call($targetNode[0]);
+                }
+            }*/
+        });
+    }
+
+    $.fn.create = function(selector, callback) {
+        var target = this[0], 
+            observer;
+
+        if (target === window.document || target === window)
+            target = window.document.body;
 
         // Create an observer instance
-        var observer = new MutationObserver(onMutation);
+        observer = new MutationObserver(function(e) {
+            onMutation.call(this, e, selector, callback);
+        });
 
         // Configuration of the observer:
         var config = { 
