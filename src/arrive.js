@@ -33,7 +33,7 @@
           if (this._beforeRemoving) {
               this._beforeRemoving(registeredEvent);
           }
-          delete this._eventsBucket[i];
+          this._eventsBucket.splice(i, 1);
         }
       }
     };
