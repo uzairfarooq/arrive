@@ -7,12 +7,51 @@ $(function() {
         describe("Arrive Event Tests", function() {
 
             describe("Event unbinding tests", function() {
-                it("arrive event should not be fired", function(done) {
-                    var eventFired = false;
-                    $(document).arrive(".test-elem", function() {
+                var eventFired, 
+                    selector = ".test-elem";
+                    callback = function() {
                         eventFired = true;
-                    });
+                    };
+
+
+
+                beforeEach(function() {
+                    eventFired = false;
+                    $(document).arrive(selector, callback);
+                });
+
+                it("arrive event should not be fired when unbind is called", function(done) {
                     $(document).unbindArrive();
+                    $("body").append($("<div class='test-elem'></div>"));
+
+                    setTimeout(function() {
+                        expect(eventFired).not.toBeTruthy();
+                        done();
+                    }, 400);
+                });
+
+                it("arrive event should not be fired when unbind is called with selector as an argument", function(done) {
+                    $(document).unbindArrive(selector);
+                    $("body").append($("<div class='test-elem'></div>"));
+
+                    setTimeout(function() {
+                        expect(eventFired).not.toBeTruthy();
+                        done();
+                    }, 400);
+                });
+
+                it("arrive event should not be fired when unbind is called with callback as an argument", function(done) {
+                    $(document).unbindArrive(callback);
+                    $("body").append($("<div class='test-elem'></div>"));
+
+                    setTimeout(function() {
+                        expect(eventFired).not.toBeTruthy();
+                        done();
+                    }, 400);
+                });
+
+                it("arrive event should not be fired when unbind is called with selector and callback as arguments", function(done) {
+                    $(document).unbindArrive(selector, callback);
                     $("body").append($("<div class='test-elem'></div>"));
 
                     setTimeout(function() {
