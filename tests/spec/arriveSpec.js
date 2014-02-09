@@ -75,12 +75,14 @@ $(function() {
                 var selector = "div.container1 .container2 .btn.red";
                 $("body").append("<div class='container1'></div>");
 
-                /*it("event should be fired when target element is nested within another element and the parent element is injected to DOM", function(done) {
+                it("event should be fired a tree is inserted and it contains an element which satisfy the selector", function(done) {
+                	$(document).unbindArrive();
                     $(document).arrive(selector, done);
                     $("body .container1").append($("<div class='container2'><span class='btn red'></span></div>"));
-                });*/
+                });
 
                 it("event should be fired when target element is directly injected in DOM", function(done) {
+                	$(document).unbindArrive();
                     $(document).arrive(selector, done);
                     $("body .container1").append($("<div class='container2'>"));
                     $("body .container1 .container2").append("<span class='btn red'></span>");

@@ -28,7 +28,7 @@
     };
 
     EventsBucket.prototype.removeEvent = function(compareFunction) {
-      for (var i=0, registeredEvent; registeredEvent = this._eventsBucket[i]; i++) {
+      for (var i=this._eventsBucket.length - 1, registeredEvent; registeredEvent = this._eventsBucket[i]; i--) {
         if (compareFunction(registeredEvent)) {
           if (this._beforeRemoving) {
               this._beforeRemoving(registeredEvent);
@@ -87,6 +87,19 @@
     eventData.data.observer.disconnect();
   });
 
+  function checkRecursively(nodes, selectorToCheck, callback) {
+  	// check each new node if it matches the selector
+    for (var i=0, node; node = nodes[i]; i++) {
+        var $node = $(node);
+        if ($node.is(selectorToCheck)) {
+            callback.call($node[0]);
+        }
+        if (node.childNodes.length > 0) {
+        	checkRecursively(node.childNodes, selectorToCheck, callback);
+        }
+    }
+  }
+
   function onMutation(mutations, selectorToCheck, callback) {
     mutations.forEach(function( mutation ) {
       var newNodes    = mutation.addedNodes, 
@@ -94,13 +107,7 @@
 
       // If new nodes are added
       if( newNodes !== null && newNodes.length > 0 ) {
-          // check each new node if it matches the selector
-          for (var i=0, node; node = newNodes[i]; i++) {
-              var $node = $(node);
-              if ($node.is(selectorToCheck)) {
-                  callback.call($node[0]);
-              }
-          }
+          checkRecursively(newNodes, selectorToCheck, callback);
       }
       /*else if (mutation.type === "attributes" && mutation.attributeName == "class") {
           //$matchingElems = $(selectorToCheck, $target);
