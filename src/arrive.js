@@ -29,7 +29,7 @@
 
     EventsBucket.prototype.removeEvent = function(compareFunction) {
       for (var i=0, registeredEvent; registeredEvent = this._eventsBucket[i]; i++) {
-        if (compareFunction(registeredEvent.data)) {
+        if (compareFunction(registeredEvent)) {
           if (this._beforeRemoving) {
               this._beforeRemoving(registeredEvent);
           }
@@ -119,37 +119,69 @@
     }, callback);
   }
 
-  function unbindArrive(selector, callback) {
-    var compareObj = {
-      target: this[0]
-    };
+  compareFunctions = {
 
-    if (arguments.length == 2) { 
-      compareObj.selector = selector;
-      compareObj.callback = callback;
-    }
-    if (arguments.length == 1) { 
-      if (Object.prototype.toString.call(selector) == "[object Function]") {
-        callback = selector; 
-        compareObj.callback = callback;
-      }
-      else {
-        compareObj.selector = selector; 
-      }
-    }
+  };
 
-    arriveEvents.removeEvent(function(eventObj) {
-      for (var prop in compareObj) {
-        if (compareObj[prop] !== eventObj[prop]) {
-          return false;
-        }
-      }
-      return true;
+  function unbindArriveAll() {
+  	var target = this[0];
+  	arriveEvents.removeEvent(function(eventObj) {
+      return eventObj.data.target === target;
     });
   }
 
-  // expose API
+  function unbindArriveCallback(callback) {
+  	var target = this[0];
+  	arriveEvents.removeEvent(function(eventObj) {
+      return eventObj.data.target === target && eventObj.callback === callback;
+    });
+  }
+
+   // to enable function overriding - By John Resig (MIT Licensed)
+	function addMethod(object, name, fn){
+    var old = object[ name ];
+    object[ name ] = function(){
+      if ( fn.length == arguments.length )
+        return fn.apply( this, arguments );
+      else if ( typeof old == 'function' )
+        return old.apply( this, arguments );
+    };
+	}
+
+  /* expose API */
   $.fn.arrive       = arrive;
-  $.fn.unbindArrive = unbindArrive;
+
+  // expose unbindArrive function with overriding 
+  addMethod($.fn, "unbindArrive", function() {
+  	var target = this[0];
+  	arriveEvents.removeEvent(function(eventObj) {
+      return eventObj.data.target === target;
+    });
+  });
+
+  addMethod($.fn, "unbindArrive", function(selector) {
+  	var target = this[0], 
+  			callback = selector, 
+  			compareFunction;
+
+  	if (typeof selector === "function") {
+  		compareFunction = function(eventObj) {
+  			return eventObj.data.target === target && eventObj.callback === callback;
+  		};
+  	}
+  	else {
+  		compareFunction = function(eventObj) {
+  			return eventObj.data.target === target && eventObj.data.selector === selector;
+  		};
+  	}
+  	arriveEvents.removeEvent(compareFunction);
+  });
+
+  addMethod($.fn, "unbindArrive", function(selector, callback) {
+  	var target = this[0];
+  	arriveEvents.removeEvent(function(eventObj) {
+      return eventObj.data.target === target && eventObj.data.selector === selector && eventObj.callback === callback;
+    });
+  });
 
 })(this, jQuery);
