@@ -14,7 +14,6 @@ $(function() {
                     };
 
 
-
                 beforeEach(function() {
                     eventFired = false;
                     $(document).arrive(selector, callback);
@@ -76,20 +75,54 @@ $(function() {
                 $("body").append("<div class='container1'></div>");
 
                 it("event should be fired a tree is inserted and it contains an element which satisfy the selector", function(done) {
-                	$(document).unbindArrive();
+                    $(document).unbindArrive();
                     $(document).arrive(selector, done);
                     $("body .container1").append($("<div class='container2'><span class='btn red'></span></div>"));
                 });
 
-                it("event should be fired when target element is directly injected in DOM", function(done) {
-                	$(document).unbindArrive();
+                xit("event should be fired when target element is directly injected in DOM", function(done) {
+                    console.log('fired');
+                    $(document).unbindArrive();
                     $(document).arrive(selector, done);
                     $("body .container1").append($("<div class='container2'>"));
-                    $("body .container1 .container2").append("<span class='btn red'></span>");
+                    $("body .container1 .container2").append($("<span class='btn red'></span>"));
                 });
 
             });
 
+        });
+
+        describe("Leave Event Tests", function() {
+            var selector = "body .test-elem";
+
+            it("event should be fired when element with specified class is removed from DOM", function(done) {
+                $(".test-elem").remove(); // remove any previous test element in DOM
+                $("body").append($("<div><div class='test-elem'></div></div>"));
+                $(document).leave(selector, done);
+                $(".test-elem").remove();
+            });
+
+            xdescribe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
+                var selector = "div.container1 .container2 .btn.red";
+
+                beforeEach(function() {
+                    $("body").append("<div class='container1'><div class='container2'><span class='btn red'></span></div></div>");
+                });
+
+                it("event should be fired a tree is removed and it contains an element which satisfy the selector", function(done) {
+                    $(document).unbindLeave();
+                    $(document).leave(selector, done);
+                    $(".container2").remove();
+                });
+
+                xit("event should be fired when target element is directly injected in DOM", function(done) {
+                    console.log('fired');
+                    $(document).unbindLeave();
+                    $(document).leave(selector, done);
+                    $(".btn.red").remove();
+                });
+
+            });
         });
     });
 
