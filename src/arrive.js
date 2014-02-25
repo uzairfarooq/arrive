@@ -1,10 +1,13 @@
 "use strict";
 
-/**
-  * arrive.js
-  * V 0.1b
-  * https://github.com/uzairfarooq/arrive
-  */
+/*
+ * arrive.js
+ * V 0.1b
+ * https://github.com/uzairfarooq/arrive
+ * MIT licensed
+ *
+ * Copyright (c) 2014 Uzair Farooq
+ */
 
 (function(window, $, undefined) {
 
