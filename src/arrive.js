@@ -2,7 +2,7 @@
 
 /*
  * arrive.js
- * V 0.1b
+ * V 0.2b
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
@@ -24,19 +24,9 @@
     };
 
     EventsBucket.prototype.addEvent = function(target, selector, callback) {
-
-      // the regex would separate the selector into two parts, the first part would contain the selector for parent element while 
-      // the 2nd part would contain the separator for last element
-      var lastElementSelectorRegex = /(.*?)([^\s](?:[^\s\'\"\[\(]+(?:\'[^\']*\'|\[[^\]]*\]|\"[^\"]*\"|\([^\)]*\))*)*)$/, 
-          subSelectors = lastElementSelectorRegex.exec(selector), 
-          parentElemSelector = subSelectors[1], 
-          lastElemSelector = subSelectors[2];
-
       var newEvent = {
         target:             target, 
         selector:           selector, 
-        parentElemSelector: parentElemSelector, 
-        lastElemSelector:   lastElemSelector, 
         callback:           callback, 
         firedElems:         []
       };
@@ -152,72 +142,73 @@
       return this;
   };
 
-    function onArriveMutation(mutations, registrationData) {
-    mutations.forEach(function( mutation ) {
-      var newNodes    = mutation.addedNodes, 
-          $targetNode = $(mutation.target);
-
-      // If new nodes are added
-      if( newNodes !== null && newNodes.length > 0 ) {
-          checkRecursively(newNodes, registrationData);
-      }
-      else if (mutation.type === "attributes") {
-          if( $targetNode.is(registrationData.selector)) {
-            // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf($targetNode[0]) == -1) {
-              registrationData.firedElems.push($targetNode[0]);
-              registrationData.callback.call($targetNode[0]);
-            }
-          }
-      }
-    });
-  }
-
-  function checkRecursively(nodes, registrationData) {
+  function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
         var $node = $(node);
         if ($node.is(registrationData.selector)) {
             // make sure the arrive event is not already fired for the element
             if (registrationData.firedElems.indexOf($node[0]) == -1) {
-                registrationData.firedElems.push($node[0]);
-                registrationData.callback.call($node[0]);
+              registrationData.firedElems.push($node[0]);
+              callbacksToBeCalled.push({ callback: registrationData.callback, elem: $node[0] });
             }
         }
         if (node.childNodes.length > 0) {
-            checkRecursively(node.childNodes, registrationData);
+            checkChildNodesRecursively(node.childNodes, registrationData, callbacksToBeCalled);
         }
     }
+  }
+
+  function callCallbacks(callbacksToBeCalled) {
+    for (var i = 0, cb; cb = callbacksToBeCalled[i]; i++) {
+      cb.callback(cb.elem);
+    }
+  }
+
+  function onArriveMutation(mutations, registrationData) {
+    mutations.forEach(function( mutation ) {
+      var newNodes    = mutation.addedNodes, 
+          $targetNode = $(mutation.target), 
+          callbacksToBeCalled = [];
+
+      // If new nodes are added
+      if( newNodes !== null && newNodes.length > 0 ) {
+        checkChildNodesRecursively(newNodes, registrationData, callbacksToBeCalled);
+      }
+      else if (mutation.type === "attributes") {
+          if( $targetNode.is(registrationData.selector)) {
+            // make sure the arrive event is not already fired for the element
+            if (registrationData.firedElems.indexOf($targetNode[0]) == -1) {
+              registrationData.firedElems.push($targetNode[0]);
+              callbacksToBeCalled.push({ callback: registrationData.callback, elem: $targetNode[0] });
+            }
+          }
+      }
+
+      callCallbacks(callbacksToBeCalled);
+    });
   }
 
   function onLeaveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
       var removedNodes  = mutation.removedNodes, 
-          $targetNode   = $(mutation.target);
+          $targetNode   = $(mutation.target), 
+          callbacksToBeCalled = [];
 
       if( removedNodes !== null && removedNodes.length > 0 ) {
-        if (registrationData.parentElemSelector.length == 0 || $targetNode.is(registrationData.parentElemSelector + $targetNode[0].tagName)) {
-          for (var i = 0, node; node = removedNodes[i]; i++) {
-            var $node = $(node);
-            if ($node.is(registrationData.lastElemSelector)) {
-              // make sure the leave event is not already fired for the element
-              if (registrationData.firedElems.indexOf($node[0]) == -1) {
-                  registrationData.firedElems.push($node[0]);
-                  registrationData.callback.call($node[0]);
-              }
-            }
-          }
-        }
+        checkChildNodesRecursively(removedNodes, registrationData, callbacksToBeCalled);
       }
+
+      callCallbacks(callbacksToBeCalled);
     });
   }
 
-    var arriveEvents = new MutationEvents(onArriveMutation), 
-        leaveEvents  = new MutationEvents(onLeaveMutation);
+  var arriveEvents = new MutationEvents(onArriveMutation), 
+      leaveEvents  = new MutationEvents(onLeaveMutation);
 
 
   // to enable function overriding - By John Resig (MIT Licensed)
-    function addMethod(object, name, fn){
+  function addMethod(object, name, fn) {
     var old = object[ name ];
     object[ name ] = function(){
       if ( fn.length == arguments.length )
@@ -225,7 +216,7 @@
       else if ( typeof old == 'function' )
         return old.apply( this, arguments );
     };
-    }
+  }
 
 
   /*** expose APIs ***/

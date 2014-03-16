@@ -74,14 +74,14 @@ $(function() {
                 var selector = "div.container1 .container2 .btn.red";
                 $("body").append("<div class='container1'></div>");
 
-                it("event should be fired a tree is inserted and it contains an element which satisfy the selector", function(done) {
+                it("event should be fired when a tree is inserted and it contains an element which satisfy the selector", function(done) {
                     $(document).unbindArrive();
                     $(document).arrive(selector, done);
                     $("body .container1").append($("<div class='container2'><span class='btn red'></span></div>"));
                 });
 
-                xit("event should be fired when target element is directly injected in DOM", function(done) {
-                    console.log('fired');
+                it("event should be fired when target element is directly injected in DOM", function(done) {
+                    $("body .container1").children().remove();
                     $(document).unbindArrive();
                     $(document).arrive(selector, done);
                     $("body .container1").append($("<div class='container2'>"));
@@ -93,7 +93,7 @@ $(function() {
         });
 
         describe("Leave Event Tests", function() {
-            var selector = "body .test-elem";
+            var selector = ".test-elem";
 
             it("event should be fired when element with specified class is removed from DOM", function(done) {
                 $(".test-elem").remove(); // remove any previous test element in DOM
@@ -102,21 +102,21 @@ $(function() {
                 $(".test-elem").remove();
             });
 
-            xdescribe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
-                var selector = "div.container1 .container2 .btn.red";
+            describe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
+                var selector = ".btn.red";
 
                 beforeEach(function() {
+                    $(".btn.red").remove();
                     $("body").append("<div class='container1'><div class='container2'><span class='btn red'></span></div></div>");
                 });
 
-                it("event should be fired a tree is removed and it contains an element which satisfy the selector", function(done) {
+                it("event should be fired when a tree is removed and it contains an element which satisfy the selector", function(done) {
                     $(document).unbindLeave();
                     $(document).leave(selector, done);
                     $(".container2").remove();
                 });
 
-                xit("event should be fired when target element is directly injected in DOM", function(done) {
-                    console.log('fired');
+                it("event should be fired when target element is directly removed from DOM", function(done) {
                     $(document).unbindLeave();
                     $(document).leave(selector, done);
                     $(".btn.red").remove();
