@@ -63,7 +63,7 @@
 
 
   // General class for binding/unbinding arrive and leave events
-  var MutationEvents = function(onMutation) {
+  var MutationEvents = function(config, onMutation) {
     var eventsBucket  = new EventsBucket(), 
         me            = this;
 
@@ -73,18 +73,11 @@
           target    = registrationData.target, 
           selector  = registrationData.selector, 
           callback  = registrationData.callback, 
-          observer, 
-          // Configuration of the observer
-          config = { 
-            attributes: true, 
-            attributeFilter: ["class"],
-            childList: true, 
-            subtree: true
-          };
+          observer;
 
         // mutation observer does not work on window or document
         if (target === window.document || target === window)
-          target = window.document.body;
+          target = document.body.parentNode;
 
         // Create an observer instance
         observer = new MutationObserver(function(e) {
@@ -142,6 +135,8 @@
       return this;
   };
 
+
+  // traverse through all descendants of a node to check if event should be fired for any descendant
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
@@ -203,8 +198,19 @@
     });
   }
 
-  var arriveEvents = new MutationEvents(onArriveMutation), 
-      leaveEvents  = new MutationEvents(onLeaveMutation);
+  // Configuration of observers
+  var arriveConfig = { 
+        attributes: true, 
+        childList: true, 
+        subtree: true
+      }, 
+      leaveConfig = {
+        childList: true, 
+        subtree: true
+      };
+
+  var arriveEvents = new MutationEvents(arriveConfig, onArriveMutation), 
+      leaveEvents  = new MutationEvents(leaveConfig, onLeaveMutation);
 
 
   // to enable function overriding - By John Resig (MIT Licensed)
