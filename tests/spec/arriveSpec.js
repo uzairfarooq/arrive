@@ -6,6 +6,55 @@ $(function() {
 
         describe("Arrive Event Tests", function() {
 
+            describe("Selector involving single element: .test-elem", function() {
+                var selector = ".test-elem";
+
+                it("event should be fired when element with specified class is injected to DOM", function(done) {
+                    $(document).arrive(selector, done);
+                    $("body").append($("<div class='test-elem'></div>"));
+                });
+
+            });
+
+            describe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
+                var selector = "div.container1 .container2 .btn.red";
+                $("body").append("<div class='container1'></div>");
+
+                it("event should be fired when a tree is inserted and it contains an element which satisfy the selector", function(done) {
+                    $(document).unbindArrive();
+                    $(document).arrive(selector, done);
+                    $("body .container1").append($("<div class='container2'><span class='btn red'></span></div>"));
+                });
+
+                it("event should be fired when target element is directly injected in DOM", function(done) {
+                    $("body .container1").children().remove();
+                    $(document).unbindArrive();
+                    $(document).arrive(selector, done);
+                    $("body .container1").append($("<div class='container2'>"));
+                    $("body .container1 .container2").append($("<span class='btn red'></span>"));
+                });
+
+            });
+
+            describe("Arrive event on attribute modification of an element.", function() {
+                var $elem       = $("<div class='container5'><div class='btn'></div></div>"), 
+                    $btn        = $elem.find(".btn");
+
+                $("body").append($elem);
+
+                it("Event should be fired when a class is added to an element and the element starts to satisfies event selector", function(done) {
+                    $(document).unbindArrive();
+                    $(document).arrive(".container5 .btn.red", done);
+                    $btn.addClass("red");
+                });
+
+                it("Event should be fired when tooltip is added to an element and the element starts to satisfies event selector", function(done) {
+                    $(document).unbindArrive();
+                    $(document).arrive(".container5 .btn[title='it works!']", done);
+                    $btn.attr("title", "it works!");
+                });
+            });
+
             describe("Event unbinding tests", function() {
                 var eventFired, 
                     selector = ".test-elem";
@@ -59,37 +108,6 @@ $(function() {
                     }, 400);
                 });
             });
-
-            describe("Selector involving single element: .test-elem", function() {
-                var selector = ".test-elem";
-
-                it("event should be fired when element with specified class is injected to DOM", function(done) {
-                    $(document).arrive(selector, done);
-                    $("body").append($("<div class='test-elem'></div>"));
-                });
-
-            });
-
-            describe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
-                var selector = "div.container1 .container2 .btn.red";
-                $("body").append("<div class='container1'></div>");
-
-                it("event should be fired when a tree is inserted and it contains an element which satisfy the selector", function(done) {
-                    $(document).unbindArrive();
-                    $(document).arrive(selector, done);
-                    $("body .container1").append($("<div class='container2'><span class='btn red'></span></div>"));
-                });
-
-                it("event should be fired when target element is directly injected in DOM", function(done) {
-                    $("body .container1").children().remove();
-                    $(document).unbindArrive();
-                    $(document).arrive(selector, done);
-                    $("body .container1").append($("<div class='container2'>"));
-                    $("body .container1 .container2").append($("<span class='btn red'></span>"));
-                });
-
-            });
-
         });
 
         describe("Leave Event Tests", function() {
