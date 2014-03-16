@@ -156,7 +156,7 @@
 
   function callCallbacks(callbacksToBeCalled) {
     for (var i = 0, cb; cb = callbacksToBeCalled[i]; i++) {
-      cb.callback(cb.elem);
+      cb.callback.call(cb.elem);
     }
   }
 
