@@ -2,7 +2,7 @@
 
 /*
  * arrive.js
- * V 0.2b
+ * V 1.0
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
