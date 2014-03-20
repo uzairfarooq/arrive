@@ -1,9 +1,10 @@
 # arrive.js
-====
+---
 
 arrive.js provides events to watch for DOM elements creation and deletion. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
 
 ### Usage
+####Watch for elements creation
 Use `arrive` event to watch for elements creation:
  ```javascript
 // watch for creation of an element which satisfies the selector ".test-elem"
@@ -31,4 +32,12 @@ $(document).unbindArrive(callbackFunc);
 
 // unbind only a specific callback on ".test-elem" selector
 $(document).unbindArrive(".test-elem", callbackFunc);
+```
+####Watch for elements removal
+Use `leave` event to watch for elements removal:
+```javascript
+// the target 
+$(".container-1").leave(".test-elem", function() {
+    var $removedElem = $(this);
+});
 ```
