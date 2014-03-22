@@ -1,7 +1,8 @@
 # arrive.js
----
 
-arrive.js provides events to watch for DOM elements creation and deletion. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
+arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
+
+[Download arrive-1.0.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-1.0.min.js) (latest)
 
 ### Usage
 ####Watch for elements creation
@@ -34,10 +35,15 @@ $(document).unbindArrive(callbackFunc);
 $(document).unbindArrive(".test-elem", callbackFunc);
 ```
 ####Watch for elements removal
-Use `leave` event to watch for elements removal:
+Use `leave` event to watch for elements removal.
+The first arugument to leave must not be a [descendent] (https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors) or [child] (https://developer.mozilla.org/en-US/docs/Web/CSS/Child_selectors) selector i.e. you cannot pass `.page .test-elem`, instead, pass `.test-elem`. It's because of a limitation in MutationObserver's api.
+
 ```javascript
-// the target 
+// watch for removal of an element which satisfies the selector ".test-elem"
 $(".container-1").leave(".test-elem", function() {
     var $removedElem = $(this);
 });
 ```
+
+You can unbind the `leave` event in the same way as `arrive` event, using `unbindLeave` function.
+
