@@ -8,8 +8,12 @@ describe("Arrive", function() {
             var selector = ".test-elem";
 
             it("event should be fired when element with specified class is injected to DOM", function(done) {
-                j(document).arrive(selector, done);
-                $("body").append($("<div class='test-elem'></div>"));
+                var $appendedElem = $("<div class='test-elem'></div>");
+                j(document).arrive(selector, function() {
+                    expect(this).toBe($appendedElem[0]);
+                    done();
+                });
+                $("body").append($appendedElem);
             });
 
         });
@@ -19,17 +23,31 @@ describe("Arrive", function() {
             $("body").append("<div class='container1'></div>");
 
             it("event should be fired when a tree is inserted and it contains an element which satisfy the selector", function(done) {
+                var $appendedElem   = $("<div class='container2'><span class='btn red'></span></div>"), 
+                    $redBtn         = $appendedElem.find(".btn.red");
+
                 j(document).unbindArrive();
-                j(document).arrive(selector, done);
-                $("body .container1").append($("<div class='container2'><span class='btn red'></span></div>"));
+                j(document).arrive(selector, function() {
+                    expect(this).toBe($redBtn[0]);
+                    done();
+                });
+
+                $("body .container1").append($appendedElem);
             });
 
             it("event should be fired when target element is directly injected in DOM", function(done) {
                 $("body .container1").children().remove();
+
+                var $redBtn = $("<span class='btn red'></span>");
+
                 j(document).unbindArrive();
-                j(document).arrive(selector, done);
+                j(document).arrive(selector, function() {
+                    expect(this).toBe($redBtn[0]);
+                    done();
+                });
+
                 $("body .container1").append($("<div class='container2'>"));
-                $("body .container1 .container2").append($("<span class='btn red'></span>"));
+                $("body .container1 .container2").append($redBtn);
             });
 
         });
@@ -42,13 +60,19 @@ describe("Arrive", function() {
 
             it("Event should be fired when a class is added to an element and the element starts to satisfies event selector", function(done) {
                 j(document).unbindArrive();
-                j(document).arrive(".container5 .btn.red", done);
+                j(document).arrive(".container5 .btn.red", function() {
+                    expect(this).toBe($btn[0]);
+                    done();
+                });
                 $btn.addClass("red");
             });
 
             it("Event should be fired when tooltip is added to an element and the element starts to satisfies event selector", function(done) {
                 j(document).unbindArrive();
-                j(document).arrive(".container5 .btn[title='it works!']", done);
+                j(document).arrive(".container5 .btn[title='it works!']", function() {
+                    expect(this).toBe($btn[0]);
+                    done(); 
+                });
                 $btn.attr("title", "it works!");
             });
         });
@@ -113,28 +137,45 @@ describe("Arrive", function() {
 
         it("event should be fired when element with specified class is removed from DOM", function(done) {
             $(".test-elem").remove(); // remove any previous test element in DOM
-            $("body").append($("<div><div class='test-elem'></div></div>"));
-            j(document).leave(selector, done);
+
+            var $toBeRemoved = $("<div><div class='test-elem'></div></div>"), 
+                $testElem    = $toBeRemoved.find(".test-elem");
+            $("body").append($toBeRemoved);
+
+            j(document).leave(selector, function() {
+                expect(this).toBe($testElem[0]);
+                done();
+            });
+
             $(".test-elem").remove();
         });
 
         describe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
-            var selector = ".btn.red";
+            var selector = ".btn.red", 
+                $redBtn  = null;
 
             beforeEach(function() {
-                $(".btn.red").remove();
-                $("body").append("<div class='container1'><div class='container2'><span class='btn red'></span></div></div>");
+                $(".container1,.container5").remove();
+                var $container1 = $("<div class='container1'><div class='container2'><span class='btn red'></span></div></div>");
+                $redBtn = $container1.find(".btn.red");
+                $("body").append($container1);
             });
 
             it("event should be fired when a tree is removed and it contains an element which satisfy the selector", function(done) {
                 j(document).unbindLeave();
-                j(document).leave(selector, done);
+                j(document).leave(selector, function() {
+                    expect(this).toBe($redBtn[0]);
+                    done();
+                });
                 $(".container2").remove();
             });
 
             it("event should be fired when target element is directly removed from DOM", function(done) {
                 j(document).unbindLeave();
-                j(document).leave(selector, done);
+                j(document).leave(selector, function() {
+                    expect(this).toBe($redBtn[0]);
+                    done();
+                });
                 $(".btn.red").remove();
             });
 
