@@ -27,13 +27,11 @@ In pure javascript you can call the function on `document`, `window`, any `HTMLE
 // watch for element creation in the whole HTML document
 document.arrive(".test-elem", function() {
     // 'this' refers to the newly created element
-    var $newElem = $(this);
 });
 
 // this will attach arrive event to all elements in the NodeList
 document.getElementsByClass(".container-1").arrive(".test-elem", function() {
     // 'this' refers to the newly created element
-    var $newElem = $(this);
 });
 ```
 
