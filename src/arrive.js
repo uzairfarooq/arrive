@@ -11,6 +11,28 @@
 
 (function(window, $, undefined) {
 
+  var utils = (function() {
+    var matches = HTMLElement.prototype.matches || HTMLElement.prototype.webkitMatchesSelector || HTMLElement.prototype.mozMatchesSelector
+                  || HTMLElement.prototype.msMatchesSelector;
+
+    return {
+      matchesSelector: function(elem, selector) {
+        return matches.call(elem, selector);
+      }, 
+      // to enable function overriding - By John Resig (MIT Licensed)
+      addMethod: function (object, name, fn) {
+        var old = object[ name ];
+        object[ name ] = function(){
+          if ( fn.length == arguments.length )
+            return fn.apply( this, arguments );
+          else if ( typeof old == 'function' )
+            return old.apply( this, arguments );
+        };
+      }
+    };
+  })();
+
+
   // Class to mantain state of all registered events of a single type
   var EventsBucket = (function() {
     var EventsBucket = function() {
@@ -68,71 +90,99 @@
         me            = this;
 
     // actual event registration before adding it to bucket
-      eventsBucket.beforeAdding(function(registrationData) {
-        var 
-          target    = registrationData.target, 
-          selector  = registrationData.selector, 
-          callback  = registrationData.callback, 
-          observer;
+    eventsBucket.beforeAdding(function(registrationData) {
+      var 
+        target    = registrationData.target, 
+        selector  = registrationData.selector, 
+        callback  = registrationData.callback, 
+        observer;
 
-        // mutation observer does not work on window or document
-        if (target === window.document || target === window)
-          target = document.body.parentNode;
+      // mutation observer does not work on window or document
+      if (target === window.document || target === window)
+        target = document.body.parentNode;
 
-        // Create an observer instance
-        observer = new MutationObserver(function(e) {
-          onMutation.call(this, e, registrationData);
-        });
-        
-        observer.observe(target, config);
-
-        registrationData.observer = observer;
+      // Create an observer instance
+      observer = new MutationObserver(function(e) {
+        onMutation.call(this, e, registrationData);
       });
+      
+      observer.observe(target, config);
 
-      // cleanup/unregister before removing an event
-      eventsBucket.beforeRemoving(function (eventData) {
-        eventData.observer.disconnect();
-      });
+      registrationData.observer = observer;
+    });
+
+    // cleanup/unregister before removing an event
+    eventsBucket.beforeRemoving(function (eventData) {
+      eventData.observer.disconnect();
+    });
+
+    function elementsToArray(elements) {
+      if (elements instanceof HTMLElement || elements instanceof HTMLDocument || elements instanceof Window) {
+        elements = [elements];
+      }
+      return elements;
+    }
 
     this.bindEvent = function(selector, callback) {
-      for (var i = 0; i < this.length; i++) {
-        eventsBucket.addEvent(this[i], selector, callback);
+      var elements = elementsToArray(this);
+      for (var i = 0; i < elements.length; i++) {
+        eventsBucket.addEvent(elements[i], selector, callback);
       }
     };
 
     this.unbindEvent = function() {
-      var target = this[0];
+      var elements = elementsToArray(this);
       eventsBucket.removeEvent(function(eventObj) {
-        return eventObj.target === target;
+        for (var i = 0; i < elements.length; i++) {
+          if (eventObj.target === elements[i]) {
+            return true;
+          }
+        }
+        return false;
       });
     };
 
     this.unbindEventWithSelectorOrCallback = function(selector) {
-      var target = this[0], 
+      var elements = elementsToArray(this), 
           callback = selector, 
           compareFunction;
 
       if (typeof selector === "function") {
         compareFunction = function(eventObj) {
-          return eventObj.target === target && eventObj.callback === callback;
+          for (var i = 0; i < elements.length; i++) {
+            if (eventObj.target === elements[i] && eventObj.callback === callback) {
+              return true;
+            }
+          }
+          return false;
         };
       }
       else {
         compareFunction = function(eventObj) {
-          return eventObj.target === target && eventObj.selector === selector;
+          for (var i = 0; i < elements.length; i++) {
+            if (eventObj.target === elements[i] && eventObj.selector === selector) {
+              return true;
+            }
+          }
+          return false;
         };
       }
       eventsBucket.removeEvent(compareFunction);
     };
 
     this.unbindEventWithSelectorAndCallback = function(selector, callback) {
-      var target = this[0];
+      var elements = elementsToArray(this);
       eventsBucket.removeEvent(function(eventObj) {
-        return eventObj.target === target && eventObj.selector === selector && eventObj.callback === callback;
+          for (var i = 0; i < elements.length; i++) {
+            if (eventObj.target === elements[i] && eventObj.selector === selector && eventObj.callback === callback) {
+              return true;
+            }
+          }
+          return false;
       });
     };
 
-      return this;
+    return this;
   };
 
 
@@ -140,12 +190,11 @@
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
-        var $node = $(node);
-        if ($node.is(registrationData.selector)) {
+        if (utils.matchesSelector(node, registrationData.selector)) {
             // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf($node[0]) == -1) {
-              registrationData.firedElems.push($node[0]);
-              callbacksToBeCalled.push({ callback: registrationData.callback, elem: $node[0] });
+            if (registrationData.firedElems.indexOf(node) == -1) {
+              registrationData.firedElems.push(node);
+              callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
             }
         }
         if (node.childNodes.length > 0) {
@@ -163,7 +212,7 @@
   function onArriveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
       var newNodes    = mutation.addedNodes, 
-          $targetNode = $(mutation.target), 
+          targetNode = mutation.target, 
           callbacksToBeCalled = [];
 
       // If new nodes are added
@@ -171,11 +220,11 @@
         checkChildNodesRecursively(newNodes, registrationData, callbacksToBeCalled);
       }
       else if (mutation.type === "attributes") {
-          if( $targetNode.is(registrationData.selector)) {
+          if(utils.matchesSelector(targetNode, registrationData.selector)) {
             // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf($targetNode[0]) == -1) {
-              registrationData.firedElems.push($targetNode[0]);
-              callbacksToBeCalled.push({ callback: registrationData.callback, elem: $targetNode[0] });
+            if (registrationData.firedElems.indexOf(targetNode) == -1) {
+              registrationData.firedElems.push(targetNode);
+              callbacksToBeCalled.push({ callback: registrationData.callback, elem: targetNode });
             }
           }
       }
@@ -187,7 +236,7 @@
   function onLeaveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
       var removedNodes  = mutation.removedNodes, 
-          $targetNode   = $(mutation.target), 
+          targetNode   = mutation.target, 
           callbacksToBeCalled = [];
 
       if( removedNodes !== null && removedNodes.length > 0 ) {
@@ -213,30 +262,26 @@
       leaveEvents  = new MutationEvents(leaveConfig, onLeaveMutation);
 
 
-  // to enable function overriding - By John Resig (MIT Licensed)
-  function addMethod(object, name, fn) {
-    var old = object[ name ];
-    object[ name ] = function(){
-      if ( fn.length == arguments.length )
-        return fn.apply( this, arguments );
-      else if ( typeof old == 'function' )
-        return old.apply( this, arguments );
-    };
+  /*** expose APIs ***/
+  function exposeApi(exposeTo) {
+    exposeTo.arrive = arriveEvents.bindEvent;
+    // expose unbindArrive function with overriding 
+    utils.addMethod(exposeTo, "unbindArrive", arriveEvents.unbindEvent);
+    utils.addMethod(exposeTo, "unbindArrive", arriveEvents.unbindEventWithSelectorOrCallback);
+    utils.addMethod(exposeTo, "unbindArrive", arriveEvents.unbindEventWithSelectorAndCallback);
+
+    exposeTo.leave = leaveEvents.bindEvent;
+    // expose unbindLeave function with overriding 
+    utils.addMethod(exposeTo, "unbindLeave", leaveEvents.unbindEvent);
+    utils.addMethod(exposeTo, "unbindLeave", leaveEvents.unbindEventWithSelectorOrCallback);
+    utils.addMethod(exposeTo, "unbindLeave", leaveEvents.unbindEventWithSelectorAndCallback);
   }
 
-
-  /*** expose APIs ***/
-
-  $.fn.arrive = arriveEvents.bindEvent;
-  // expose unbindArrive function with overriding 
-  addMethod($.fn, "unbindArrive", arriveEvents.unbindEvent);
-  addMethod($.fn, "unbindArrive", arriveEvents.unbindEventWithSelectorOrCallback);
-  addMethod($.fn, "unbindArrive", arriveEvents.unbindEventWithSelectorAndCallback);
-
-  $.fn.leave = leaveEvents.bindEvent;
-  // expose unbindLeave function with overriding 
-  addMethod($.fn, "unbindLeave", leaveEvents.unbindEvent);
-  addMethod($.fn, "unbindLeave", leaveEvents.unbindEventWithSelectorOrCallback);
-  addMethod($.fn, "unbindLeave", leaveEvents.unbindEventWithSelectorAndCallback);
+  if ($) {
+    exposeApi($.fn);
+  }
+  exposeApi(HTMLElement.prototype);
+  exposeApi(HTMLDocument.prototype);
+  exposeApi(Window.prototype);
 
 })(this, jQuery);
