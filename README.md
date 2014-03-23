@@ -2,12 +2,13 @@
 
 arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
 
-[Download arrive-1.0.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-1.0.min.js) (latest)
+[Download arrive-1.1.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-1.1.min.js) (latest)
 
 ## Usage
+**The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
 ###Watch for elements creation
 Use `arrive` event to watch for elements creation:
- ```javascript
+```javascript
 // watch for creation of an element which satisfies the selector ".test-elem"
 $(document).arrive(".test-elem", function() {
     // 'this' refers to the newly created element
@@ -20,6 +21,22 @@ $(".container-1").arrive(".test-elem", function() {
     var $newElem = $(this);
 });
 ```
+
+In pure javascript you can call the function on `document`, `window`, any `HTMLElement` or `NodeList`, like this:
+```javascript
+// watch for element creation in the whole HTML document
+document.arrive(".test-elem", function() {
+    // 'this' refers to the newly created element
+    var $newElem = $(this);
+});
+
+// this will attach arrive event to all elements in the NodeList
+document.getElementsByClass(".container-1").arrive(".test-elem", function() {
+    // 'this' refers to the newly created element
+    var $newElem = $(this);
+});
+```
+
 Make sure to remove listeners when they are no longer needed, it's better for performance:
  ```javascript
 // unbind all arrive events on document element
