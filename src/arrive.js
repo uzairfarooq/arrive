@@ -116,7 +116,7 @@
       eventData.observer.disconnect();
     });
 
-    function elementsToArray(elements) {
+    function toArray(elements) {
       if (elements instanceof HTMLElement || elements instanceof HTMLDocument || elements instanceof Window) {
         elements = [elements];
       }
@@ -124,14 +124,14 @@
     }
 
     this.bindEvent = function(selector, callback) {
-      var elements = elementsToArray(this);
+      var elements = toArray(this);
       for (var i = 0; i < elements.length; i++) {
         eventsBucket.addEvent(elements[i], selector, callback);
       }
     };
 
     this.unbindEvent = function() {
-      var elements = elementsToArray(this);
+      var elements = toArray(this);
       eventsBucket.removeEvent(function(eventObj) {
         for (var i = 0; i < elements.length; i++) {
           if (eventObj.target === elements[i]) {
@@ -143,7 +143,7 @@
     };
 
     this.unbindEventWithSelectorOrCallback = function(selector) {
-      var elements = elementsToArray(this), 
+      var elements = toArray(this), 
           callback = selector, 
           compareFunction;
 
@@ -171,7 +171,7 @@
     };
 
     this.unbindEventWithSelectorAndCallback = function(selector, callback) {
-      var elements = elementsToArray(this);
+      var elements = toArray(this);
       eventsBucket.removeEvent(function(eventObj) {
           for (var i = 0; i < elements.length; i++) {
             if (eventObj.target === elements[i] && eventObj.selector === selector && eventObj.callback === callback) {
