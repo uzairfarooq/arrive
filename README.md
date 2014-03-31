@@ -36,7 +36,7 @@ document.getElementsByClass(".container-1").arrive(".test-elem", function() {
 ```
 
 Make sure to remove listeners when they are no longer needed, it's better for performance:
- ```javascript
+```javascript
 // unbind all arrive events on document element
 $(document).unbindArrive();
 
@@ -72,3 +72,21 @@ arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/do
 | Safari            | 6.1+              |
 | Internet Explorer | 11.0+             |
 | Opera             | 14.0+             |
+
+##Contributing
+####Report a bug / Request a feature
+If you want to report a bug or request a feature, use the [Issues] (https://github.com/uzairfarooq/arrive/issues) section. Before creating a new issue, search the existing ones to make sure that you're not creating a duplicate. When reporting a bug, be sure to include OS/browser version and steps/code to reproduce the bug, a [JSFiddle] (http://jsfiddle.net/) would be great.
+
+####Development
+If you want ot contribute to arrive here is the workflow you should use:
+
+1. Fork the repository.
+2. Clone the forked repository locally.
+3. From the `develop` branch, create and checkout a new feature branch to work upon. (If you want to work on some minor bug fix, you can skip this step and continue to work in `develop` branch)
+4. Make your changes in that branch (the actual source file is `/src/arrive.js`).
+5. If sensible, add some jasmine tests in `/tests/spec/arriveSpec.js` file.
+6. Make sure there are no regressions by executing the unit tests by opening the file `/tests/SpecRunner.html` in a browser. There is a button 'Run tests without jQuery' at the top left of th page, click that button to make sure that the tests passes without jQuery. Run the test cases in all major browsers.
+7. Push the changes to your github repository.
+8. Submit a pull request from your repo back to the original repository.
+9. Once it is accepted, remember to pull those changes back into your develop branch!
+
