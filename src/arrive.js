@@ -99,7 +99,7 @@
 
       // mutation observer does not work on window or document
       if (target === window.document || target === window)
-        target = document.body.parentNode;
+        target = document.getElementsByTagName("html")[0];
 
       // Create an observer instance
       observer = new MutationObserver(function(e) {
