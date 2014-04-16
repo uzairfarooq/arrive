@@ -2,7 +2,7 @@
 
 /*
  * arrive.js
- * v1.1
+ * v1.1.1
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
@@ -99,7 +99,7 @@
 
       // mutation observer does not work on window or document
       if (target === window.document || target === window)
-        target = document.body.parentNode;
+        target = document.getElementsByTagName("html")[0];
 
       // Create an observer instance
       observer = new MutationObserver(function(e) {
@@ -117,7 +117,7 @@
     });
 
     function toArray(elements) {
-      if (elements instanceof HTMLElement || elements instanceof HTMLDocument || elements instanceof Window) {
+      if (elements[0] === undefined) {
         elements = [elements];
       }
       return elements;
@@ -281,6 +281,8 @@
     exposeApi($.fn);
   }
   exposeApi(HTMLElement.prototype);
+  exposeApi(NodeList.prototype);
+  exposeApi(HTMLCollection.prototype);
   exposeApi(HTMLDocument.prototype);
   exposeApi(Window.prototype);
 

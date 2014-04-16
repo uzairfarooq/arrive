@@ -180,5 +180,17 @@ describe("Arrive", function() {
             });
 
         });
+
+        describe("Calling arrive function on NodeList and HTMLElement", function() {
+            it("arrive function should be callable on NodeList", function() {
+                document.getElementsByTagName("body").arrive(".test", function() {});
+                expect(true).toBeTruthy();
+            });
+
+            it("arrive function should be callable on HTMLElement", function() {
+                document.getElementsByTagName("body")[0].arrive(".test", function() {});
+                expect(true).toBeTruthy();
+            });
+        });
     });
 });
