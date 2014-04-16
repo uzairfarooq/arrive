@@ -2,7 +2,7 @@
 
 /*
  * arrive.js
- * v1.1.1
+ * v1.1.2
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
@@ -117,7 +117,7 @@
     });
 
     function toArray(elements) {
-      if (elements[0] === undefined) {
+      if (typeof elements.length !== "number") {
         elements = [elements];
       }
       return elements;

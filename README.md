@@ -2,7 +2,7 @@
 
 arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
 
-[Download arrive-1.1.1.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-1.1.1.min.js) (latest)
+[Download arrive-1.1.2.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-1.1.2.min.js) (latest)
 
 ## Usage
 **The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
