@@ -117,7 +117,7 @@
     });
 
     function toArray(elements) {
-      if (elements[0] === undefined) {
+      if (typeof elements.length !== "number") {
         elements = [elements];
       }
       return elements;
