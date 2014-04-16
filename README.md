@@ -2,7 +2,7 @@
 
 arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
 
-[Download arrive-1.1.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-1.1.min.js) (latest)
+[Download arrive-1.1.1.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-1.1.1.min.js) (latest)
 
 ## Usage
 **The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
@@ -51,7 +51,7 @@ $(document).unbindArrive(".test-elem", callbackFunc);
 ```
 ###Watch for elements removal
 Use `leave` event to watch for elements removal.
-The first arugument to leave must not be a [descendent] (https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors) or [child] (https://developer.mozilla.org/en-US/docs/Web/CSS/Child_selectors) selector i.e. you cannot pass `.page .test-elem`, instead, pass `.test-elem`. It's because of a limitation in MutationObserver's api.
+The first arugument to leave must not be a [descendent](https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors) or [child](https://developer.mozilla.org/en-US/docs/Web/CSS/Child_selectors) selector i.e. you cannot pass `.page .test-elem`, instead, pass `.test-elem`. It's because of a limitation in MutationObserver's api.
 
 ```javascript
 // watch for removal of an element which satisfies the selector ".test-elem"
@@ -75,7 +75,7 @@ arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/do
 
 ##Contributing
 ####Report a bug / Request a feature
-If you want to report a bug or request a feature, use the [Issues] (https://github.com/uzairfarooq/arrive/issues) section. Before creating a new issue, search the existing ones to make sure that you're not creating a duplicate. When reporting a bug, be sure to include OS/browser version and steps/code to reproduce the bug, a [JSFiddle] (http://jsfiddle.net/) would be great.
+If you want to report a bug or request a feature, use the [Issues](https://github.com/uzairfarooq/arrive/issues) section. Before creating a new issue, search the existing ones to make sure that you're not creating a duplicate. When reporting a bug, be sure to include OS/browser version and steps/code to reproduce the bug, a [JSFiddle](http://jsfiddle.net/) would be great.
 
 ####Development
 If you want ot contribute to arrive here is the workflow you should use:
