@@ -117,7 +117,7 @@
     });
 
     function toArray(elements) {
-      if (elements instanceof HTMLElement || elements instanceof HTMLDocument || elements instanceof Window) {
+      if (elements[0] === undefined) {
         elements = [elements];
       }
       return elements;
@@ -281,6 +281,8 @@
     exposeApi($.fn);
   }
   exposeApi(HTMLElement.prototype);
+  exposeApi(NodeList.prototype);
+  exposeApi(HTMLCollection.prototype);
   exposeApi(HTMLDocument.prototype);
   exposeApi(Window.prototype);
 
