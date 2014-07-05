@@ -60,7 +60,7 @@ describe("Arrive", function() {
 
             it("Event should be fired when a class is added to an element and the element starts to satisfies event selector", function(done) {
                 j(document).unbindArrive();
-                j(document).arrive(".container5 .btn.red", function() {
+                j(document).arrive(".container5 .btn.red", { onAttributesModification: true }, function() {
                     expect(this).toBe($btn[0]);
                     done();
                 });
@@ -69,11 +69,41 @@ describe("Arrive", function() {
 
             it("Event should be fired when tooltip is added to an element and the element starts to satisfies event selector", function(done) {
                 j(document).unbindArrive();
-                j(document).arrive(".container5 .btn[title='it works!']", function() {
+                j(document).arrive(".container5 .btn[title='it works!']", { onAttributesModification: true } , function() {
                     expect(this).toBe($btn[0]);
                     done(); 
                 });
                 $btn.attr("title", "it works!");
+            });
+
+            it("Event should be not fired when a class is added to an element and the element starts to satisfies event selector but onAttributesModification option is false", function(done) {
+                j(document).unbindArrive();
+
+                var eventFired = false;
+                j(document).arrive(".container5 .btn.red", function() {
+                    eventFired = true;
+                });
+                $btn.addClass("red");
+
+                setTimeout(function() {
+                    expect(eventFired).not.toBeTruthy();
+                    done();
+                }, 400);
+            });
+
+            it("Event should be not fired when tooltip is added to an element and the element starts to satisfies event selector but onAttributesModification option is false", function(done) {
+                j(document).unbindArrive();
+
+                var eventFired = false;
+                j(document).arrive(".container5 .btn[title='it works!']", function() {
+                    eventFired = true;
+                });
+                $btn.attr("title", "it works!");
+
+                setTimeout(function() {
+                    expect(eventFired).not.toBeTruthy();
+                    done();
+                }, 400);
             });
         });
 
