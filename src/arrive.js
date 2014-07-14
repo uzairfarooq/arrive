@@ -312,4 +312,4 @@
   exposeApi(HTMLDocument.prototype);
   exposeApi(Window.prototype);
 
-})(this, jQuery);
+})(this, typeof jQuery === 'undefined' ? null : jQuery);
