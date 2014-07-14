@@ -262,7 +262,7 @@
           subtree: true
         };
 
-    if (options.onAttributesModification) {
+    if (options.fireOnAttributesModification) {
       config.attributes = true;
     }
 
@@ -280,7 +280,7 @@
 
   // Default options
   var arriveDefaultOptions = {
-        onAttributesModification: false
+        fireOnAttributesModification: false
       }, 
       leaveDefaultOptions = {};
 
