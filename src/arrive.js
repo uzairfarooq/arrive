@@ -2,7 +2,7 @@
 
 /*
  * arrive.js
- * v1.1.2
+ * v2.0.0
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
@@ -45,10 +45,11 @@
       this._beforeRemoving  = null;
     };
 
-    EventsBucket.prototype.addEvent = function(target, selector, callback) {
+    EventsBucket.prototype.addEvent = function(target, selector, options, callback) {
       var newEvent = {
         target:             target, 
         selector:           selector, 
+        options:            options, 
         callback:           callback, 
         firedElems:         []
       };
@@ -85,7 +86,7 @@
 
 
   // General class for binding/unbinding arrive and leave events
-  var MutationEvents = function(config, onMutation) {
+  var MutationEvents = function(getObserverConfig, defaultOptions, onMutation) {
     var eventsBucket  = new EventsBucket(), 
         me            = this;
 
@@ -105,6 +106,8 @@
       observer = new MutationObserver(function(e) {
         onMutation.call(this, e, registrationData);
       });
+
+      var config = getObserverConfig(registrationData.options);
       
       observer.observe(target, config);
 
@@ -123,10 +126,15 @@
       return elements;
     }
 
-    this.bindEvent = function(selector, callback) {
+    this.bindEvent = function(selector, options, callback) {
+      if (typeof callback === "undefined") {
+        callback = options;
+        options = defaultOptions;
+      }
+
       var elements = toArray(this);
       for (var i = 0; i < elements.length; i++) {
-        eventsBucket.addEvent(elements[i], selector, callback);
+        eventsBucket.addEvent(elements[i], selector, options, callback);
       }
     };
 
@@ -247,19 +255,37 @@
     });
   }
 
-  // Configuration of observers
-  var arriveConfig = { 
-        attributes: true, 
-        childList: true, 
-        subtree: true
-      }, 
-      leaveConfig = {
-        childList: true, 
-        subtree: true
-      };
+  function getArriveObserverConfig(options) {
+    var config = { 
+          attributes: false, 
+          childList: true, 
+          subtree: true
+        };
 
-  var arriveEvents = new MutationEvents(arriveConfig, onArriveMutation), 
-      leaveEvents  = new MutationEvents(leaveConfig, onLeaveMutation);
+    if (options.fireOnAttributesModification) {
+      config.attributes = true;
+    }
+
+    return config;
+  }
+  function getLeaveObserverConfig(options) {
+    var config = {
+          childList: true, 
+          subtree: true
+        };
+
+    return config;
+  }
+      
+
+  // Default options
+  var arriveDefaultOptions = {
+        fireOnAttributesModification: false
+      }, 
+      leaveDefaultOptions = {};
+
+  var arriveEvents = new MutationEvents(getArriveObserverConfig, arriveDefaultOptions, onArriveMutation), 
+      leaveEvents  = new MutationEvents(getLeaveObserverConfig, leaveDefaultOptions, onLeaveMutation);
 
 
   /*** expose APIs ***/
@@ -286,4 +312,4 @@
   exposeApi(HTMLDocument.prototype);
   exposeApi(Window.prototype);
 
-})(this, jQuery);
+})(this, typeof jQuery === 'undefined' ? null : jQuery);

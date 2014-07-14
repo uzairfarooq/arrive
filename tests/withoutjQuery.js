@@ -7,7 +7,7 @@ function getParameterByName(name) {
 
 if (getParameterByName("withoutjQuery") == "true") {
   // run tests without jQuery
-  jQuery = undefined;
+  delete jQuery;
   j = function(selector) {
     return $(selector)[0];
   };
