@@ -53,7 +53,7 @@ $(document).unbindArrive(".test-elem", callbackFunc);
 As of v2.0 `arrive` event accepts an optional `options` object as 2nd argument. Options object consists of following:
 ```javascript
 var options = {
-    fireOnAttributesModification: boolean // Defaults to false. Setting it to true would make arrive event fire on existing elements which starts to satisfy selector after their attributes are modified otherwise arrive event would only fire for newly created elements.
+    fireOnAttributesModification: boolean // Defaults to false. Setting it to true would make arrive event fire on existing elements which start to satisfy selector after some modification in DOM. If false, id'd only fire for newly created elements.
 };
 ```
 Example:
