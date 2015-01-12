@@ -11,6 +11,10 @@
 
 (function(window, $, undefined) {
 
+  if(!window.MutationObserver || typeof HTMLElement === 'undefined'){
+    return; //for unsupported browsers
+  }
+
   var utils = (function() {
     var matches = HTMLElement.prototype.matches || HTMLElement.prototype.webkitMatchesSelector || HTMLElement.prototype.mozMatchesSelector
                   || HTMLElement.prototype.msMatchesSelector;
