@@ -198,6 +198,9 @@
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
+        if ((' '+node.className+' ').indexOf(' ignoreArriveOrLeaveRecursively ') != -1) {
+            continue;
+        }
         if (utils.matchesSelector(node, registrationData.selector)) {
             // make sure the arrive event is not already fired for the element
             if (registrationData.firedElems.indexOf(node) == -1) {
