@@ -9,6 +9,8 @@
  * Copyright (c) 2014 Uzair Farooq
  */
 
+var _arrive_unique_id_ = 0;
+
 (function(window, $, undefined) {
 
   var utils = (function() {
@@ -51,7 +53,7 @@
         selector:           selector, 
         options:            options, 
         callback:           callback, 
-        firedElems:         []
+        firedElems:         new Set()
       };
 
       if (this._beforeAdding) {
@@ -193,18 +195,34 @@
     return this;
   };
 
+  function shouldBeIgnored(node){
+    if(node._shouldBeIgnored === undefined){
+        if ((' '+node.className+' ').indexOf(' ignore-arrive ') != -1){
+            return node._shouldBeIgnored = true;
+        }
+        if (node.parentNode == null){
+            return node._shouldBeIgnored = false;
+        }
+        return node._shouldBeIgnored = shouldBeIgnored(node.parentNode);
+    }
+    return node._shouldBeIgnored;
+  }
 
   // traverse through all descendants of a node to check if event should be fired for any descendant
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
-        if ((' '+node.className+' ').indexOf(' ignoreArriveOrLeaveRecursively ') != -1) {
+        if (shouldBeIgnored(node)) {
             continue;
         }
+
         if (utils.matchesSelector(node, registrationData.selector)) {
+            if(node._id === undefined) {
+              node._id = _arrive_unique_id_++;
+            }
             // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(node) == -1) {
-              registrationData.firedElems.push(node);
+            if (! registrationData.firedElems.has(node._id)) {
+              registrationData.firedElems.add(node._id);
               callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
             }
         }
@@ -222,6 +240,9 @@
 
   function onArriveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
+      if (shouldBeIgnored(mutation.target)) {
+          return;
+      }
       var newNodes    = mutation.addedNodes, 
           targetNode = mutation.target, 
           callbacksToBeCalled = [];
@@ -232,9 +253,12 @@
       }
       else if (mutation.type === "attributes") {
           if(utils.matchesSelector(targetNode, registrationData.selector)) {
+            if(targetNode._id === undefined){
+                targetNode._id = _arrive_unique_id_++;
+            }
             // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(targetNode) == -1) {
-              registrationData.firedElems.push(targetNode);
+            if (! registrationData.firedElems.has(targetNode._id)) {
+              registrationData.firedElems.add(targetNode._id);
               callbacksToBeCalled.push({ callback: registrationData.callback, elem: targetNode });
             }
           }
@@ -246,6 +270,9 @@
 
   function onLeaveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
+      if (shouldBeIgnored(mutation.target)) {
+          return;
+      }
       var removedNodes  = mutation.removedNodes, 
           targetNode   = mutation.target, 
           callbacksToBeCalled = [];
