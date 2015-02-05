@@ -97,7 +97,7 @@ If you want ot contribute to arrive, here is the workflow you should use:
 
 1. Fork the repository.
 2. Clone the forked repository locally.
-3. From the `develop` branch, create and checkout a new feature branch to work upon. (If you want to work on some minor bug fix, you can skip this step and continue to work in `develop` branch)
+3. From the `dev` branch, create and checkout a new feature branch to work upon. (If you want to work on some minor bug fix, you can skip this step and continue to work in `dev` branch)
 4. Make your changes in that branch (the actual source file is `/src/arrive.js`).
 5. If sensible, add some jasmine tests in `/tests/spec/arriveSpec.js` file.
 6. Make sure there are no regressions by executing the unit tests by opening the file `/tests/SpecRunner.html` in a browser. There is a button 'Run tests without jQuery' at the top left of th page, click that button to make sure that the tests passes without jQuery. Run the test cases in all major browsers.
