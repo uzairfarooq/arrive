@@ -6,7 +6,7 @@
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
- * Copyright (c) 2014 Uzair Farooq
+ * Copyright (c) 2014-2015 Uzair Farooq
  */
 
 (function(window, $, undefined) {
