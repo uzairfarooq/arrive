@@ -109,6 +109,8 @@ var _arrive_unique_id_ = 0;
         target = document.getElementsByTagName("html")[0];
       }
 
+      // if leave event is called without a selector, we'll attach event to parent element and listen
+      // for the removal of target element
       if (selector == null) {
         target = target.parentElement;
       }
