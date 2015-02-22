@@ -1,5 +1,3 @@
-"use strict";
-
 /*
  * arrive.js
  * v2.0.0
@@ -12,6 +10,12 @@
 var _arrive_unique_id_ = 0;
 
 (function(window, $, undefined) {
+
+  "use strict";
+
+  if(!window.MutationObserver || typeof HTMLElement === 'undefined'){
+    return; //for unsupported browsers
+  }
 
   var utils = (function() {
     var matches = HTMLElement.prototype.matches || HTMLElement.prototype.webkitMatchesSelector || HTMLElement.prototype.mozMatchesSelector
