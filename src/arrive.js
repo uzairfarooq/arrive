@@ -101,8 +101,13 @@ var _arrive_unique_id_ = 0;
         observer;
 
       // mutation observer does not work on window or document
-      if (target === window.document || target === window)
+      if (target === window.document || target === window) {
         target = document.getElementsByTagName("html")[0];
+      }
+
+      if (selector == null) {
+        target = target.parentElement;
+      }
 
       // Create an observer instance
       observer = new MutationObserver(function(e) {
@@ -129,6 +134,12 @@ var _arrive_unique_id_ = 0;
     }
 
     this.bindEvent = function(selector, options, callback) {
+      if (typeof selector == "function") {
+        callback = selector;
+        selector = null;
+        options = defaultOptions;
+      }
+
       if (typeof callback === "undefined") {
         callback = options;
         options = defaultOptions;
@@ -209,14 +220,14 @@ var _arrive_unique_id_ = 0;
   }
 
   // traverse through all descendants of a node to check if event should be fired for any descendant
-  function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
+  function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled, matchFunc) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
         if (shouldBeIgnored(node)) {
             continue;
         }
 
-        if (utils.matchesSelector(node, registrationData.selector)) {
+        if (matchFunc(node, registrationData)) {
             if(node._id === undefined) {
               node._id = _arrive_unique_id_++;
             }
@@ -227,7 +238,7 @@ var _arrive_unique_id_ = 0;
             }
         }
         if (node.childNodes.length > 0) {
-            checkChildNodesRecursively(node.childNodes, registrationData, callbacksToBeCalled);
+            checkChildNodesRecursively(node.childNodes, registrationData, callbacksToBeCalled, matchFunc);
         }
     }
   }
@@ -249,7 +260,7 @@ var _arrive_unique_id_ = 0;
 
       // If new nodes are added
       if( newNodes !== null && newNodes.length > 0 ) {
-        checkChildNodesRecursively(newNodes, registrationData, callbacksToBeCalled);
+        checkChildNodesRecursively(newNodes, registrationData, callbacksToBeCalled, arriveMatchFunc);
       }
       else if (mutation.type === "attributes") {
           if(utils.matchesSelector(targetNode, registrationData.selector)) {
@@ -278,11 +289,19 @@ var _arrive_unique_id_ = 0;
           callbacksToBeCalled = [];
 
       if( removedNodes !== null && removedNodes.length > 0 ) {
-        checkChildNodesRecursively(removedNodes, registrationData, callbacksToBeCalled);
+        checkChildNodesRecursively(removedNodes, registrationData, callbacksToBeCalled, leaveMatchFunc);
       }
 
       callCallbacks(callbacksToBeCalled);
     });
+  }
+
+  function arriveMatchFunc(node, registrationData) {
+    return utils.matchesSelector(node, registrationData.selector);
+  }
+
+  function leaveMatchFunc(node, registrationData) {
+    return registrationData.selector == null ? (node == registrationData.target) : utils.matchesSelector(node, registrationData.selector);
   }
 
   function getArriveObserverConfig(options) {
