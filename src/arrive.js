@@ -1,15 +1,21 @@
-"use strict";
-
 /*
  * arrive.js
- * v2.0.0
+ * v2.1.0
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
- * Copyright (c) 2014 Uzair Farooq
+ * Copyright (c) 2014-2015 Uzair Farooq
  */
 
+var _arrive_unique_id_ = 0;
+
 (function(window, $, undefined) {
+
+  "use strict";
+
+  if(!window.MutationObserver || typeof HTMLElement === 'undefined'){
+    return; //for unsupported browsers
+  }
 
   var utils = (function() {
     var matches = HTMLElement.prototype.matches || HTMLElement.prototype.webkitMatchesSelector || HTMLElement.prototype.mozMatchesSelector
@@ -38,9 +44,9 @@
     var EventsBucket = function() {
       // holds all the events
 
-      this._eventsBucket    = [], 
+      this._eventsBucket    = [];
       // function to be called while adding an event, the function should do the event initialization/registration
-      this._beforeAdding    = null, 
+      this._beforeAdding    = null;
       // function to be called while removing an event, the function should do the event destruction
       this._beforeRemoving  = null;
     };
@@ -193,15 +199,34 @@
     return this;
   };
 
+  function shouldBeIgnored(node){
+    if(node._shouldBeIgnored === undefined){
+        if ((' '+node.className+' ').indexOf(' ignore-arrive ') != -1){
+            return node._shouldBeIgnored = true;
+        }
+        if (node.parentNode == null){
+            return node._shouldBeIgnored = false;
+        }
+        return node._shouldBeIgnored = shouldBeIgnored(node.parentNode);
+    }
+    return node._shouldBeIgnored;
+  }
 
   // traverse through all descendants of a node to check if event should be fired for any descendant
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
+        if (shouldBeIgnored(node)) {
+            continue;
+        }
+
         if (utils.matchesSelector(node, registrationData.selector)) {
+            if(node._id === undefined) {
+              node._id = _arrive_unique_id_++;
+            }
             // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(node) == -1) {
-              registrationData.firedElems.push(node);
+            if (registrationData.firedElems.indexOf(node._id) == -1) {
+              registrationData.firedElems.push(node._id);
               callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
             }
         }
@@ -219,6 +244,9 @@
 
   function onArriveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
+      if (shouldBeIgnored(mutation.target)) {
+          return;
+      }
       var newNodes    = mutation.addedNodes, 
           targetNode = mutation.target, 
           callbacksToBeCalled = [];
@@ -229,9 +257,12 @@
       }
       else if (mutation.type === "attributes") {
           if(utils.matchesSelector(targetNode, registrationData.selector)) {
+            if(targetNode._id === undefined){
+                targetNode._id = _arrive_unique_id_++;
+            }
             // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(targetNode) == -1) {
-              registrationData.firedElems.push(targetNode);
+            if (registrationData.firedElems.indexOf(targetNode._id) == -1) {
+              registrationData.firedElems.push(targetNode._id);
               callbacksToBeCalled.push({ callback: registrationData.callback, elem: targetNode });
             }
           }
@@ -243,6 +274,9 @@
 
   function onLeaveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
+      if (shouldBeIgnored(mutation.target)) {
+          return;
+      }
       var removedNodes  = mutation.removedNodes, 
           targetNode   = mutation.target, 
           callbacksToBeCalled = [];

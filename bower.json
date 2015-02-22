@@ -1,0 +1,29 @@
+{
+  "name": "arrive",
+  "version": "2.0.0",
+  "description": "Watch for DOM elements creation and removal.",
+  "main": "src/arrive.js",
+  "keywords": [
+    "watch",
+    "listen",
+    "DOM",
+    "elements",
+    "creation",
+    "removal",
+    "injected"
+  ],
+  "authors": [
+    { "name": "Uzair Farooq", "email": "uzair.farooq@outlook.com" },
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/uzairfarooq/arrive.git"
+  },
+  "license": "/LICENSE",
+  "homepage": "https://github.com/uzairfarooq/arrive",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ]
+}

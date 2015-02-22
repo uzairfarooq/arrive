@@ -2,7 +2,14 @@
 
 arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
 
-[Download arrive-2.0.0.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-2.0.0.min.js) (latest)
+Download [arrive-2.1.0.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-2.1.0.min.js) (latest)
+
+or use **[Bower](https://raw.githubusercontent.com/uzairfarooq/arrive/master/releases/arrive-2.0.0.min.js)** to install:
+
+```bash
+# install arrive.js and add it to bower.json dependencies
+$ bower install arrive --save
+```
 
 ## Usage
 **The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
@@ -93,11 +100,11 @@ arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/do
 If you want to report a bug or request a feature, use the [Issues](https://github.com/uzairfarooq/arrive/issues) section. Before creating a new issue, search the existing ones to make sure that you're not creating a duplicate. When reporting a bug, be sure to include OS/browser version and steps/code to reproduce the bug, a [JSFiddle](http://jsfiddle.net/) would be great.
 
 ####Development
-If you want ot contribute to arrive here is the workflow you should use:
+If you want ot contribute to arrive, here is the workflow you should use:
 
 1. Fork the repository.
 2. Clone the forked repository locally.
-3. From the `develop` branch, create and checkout a new feature branch to work upon. (If you want to work on some minor bug fix, you can skip this step and continue to work in `develop` branch)
+3. From the `dev` branch, create and checkout a new feature branch to work upon. (If you want to work on some minor bug fix, you can skip this step and continue to work in `dev` branch)
 4. Make your changes in that branch (the actual source file is `/src/arrive.js`).
 5. If sensible, add some jasmine tests in `/tests/spec/arriveSpec.js` file.
 6. Make sure there are no regressions by executing the unit tests by opening the file `/tests/SpecRunner.html` in a browser. There is a button 'Run tests without jQuery' at the top left of th page, click that button to make sure that the tests passes without jQuery. Run the test cases in all major browsers.
