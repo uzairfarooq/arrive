@@ -40,9 +40,9 @@ var _arrive_unique_id_ = 0;
     var EventsBucket = function() {
       // holds all the events
 
-      this._eventsBucket    = [], 
+      this._eventsBucket    = [];
       // function to be called while adding an event, the function should do the event initialization/registration
-      this._beforeAdding    = null, 
+      this._beforeAdding    = null;
       // function to be called while removing an event, the function should do the event destruction
       this._beforeRemoving  = null;
     };
