@@ -57,7 +57,7 @@ var _arrive_unique_id_ = 0;
         selector:           selector, 
         options:            options, 
         callback:           callback, 
-        firedElems:         new Set()
+        firedElems:         []
       };
 
       if (this._beforeAdding) {
@@ -225,8 +225,8 @@ var _arrive_unique_id_ = 0;
               node._id = _arrive_unique_id_++;
             }
             // make sure the arrive event is not already fired for the element
-            if (! registrationData.firedElems.has(node._id)) {
-              registrationData.firedElems.add(node._id);
+            if (registrationData.firedElems.indexOf(node._id) == -1) {
+              registrationData.firedElems.push(node._id);
               callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
             }
         }
@@ -261,8 +261,8 @@ var _arrive_unique_id_ = 0;
                 targetNode._id = _arrive_unique_id_++;
             }
             // make sure the arrive event is not already fired for the element
-            if (! registrationData.firedElems.has(targetNode._id)) {
-              registrationData.firedElems.add(targetNode._id);
+            if (registrationData.firedElems.indexOf(targetNode._id) == -1) {
+              registrationData.firedElems.push(targetNode._id);
               callbacksToBeCalled.push({ callback: registrationData.callback, elem: targetNode });
             }
           }
