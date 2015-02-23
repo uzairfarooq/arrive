@@ -56,6 +56,10 @@ $(document).unbindArrive(callbackFunc);
 // unbind only a specific callback on ".test-elem" selector
 $(document).unbindArrive(".test-elem", callbackFunc);
 ```
+
+#####Performance Considerations
+Arrive watches for subtree modifications of the element you bind the event to. So, if there are too many modifications going on in the subtree, the events could become expensive. You can exclude a DOM element and its subtree from Arrive events by adding `ignore-arrive` class to it.
+
 ####Options
 As of v2.0 `arrive` event accepts an optional `options` object as 2nd argument. Options object consists of following:
 ```javascript
