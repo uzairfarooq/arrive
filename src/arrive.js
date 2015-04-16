@@ -7,8 +7,6 @@
  * Copyright (c) 2014-2015 Uzair Farooq
  */
 
-var _arrive_unique_id_ = 0;
-
 (function(window, $, undefined) {
 
   "use strict";
@@ -93,8 +91,9 @@ var _arrive_unique_id_ = 0;
 
   // General class for binding/unbinding arrive and leave events
   var MutationEvents = function(getObserverConfig, defaultOptions, onMutation) {
-    var eventsBucket  = new EventsBucket(), 
-        me            = this;
+    var eventsBucket    = new EventsBucket(), 
+        me              = this, 
+        arriveUniqueId  = 0;
 
     // actual event registration before adding it to bucket
     eventsBucket.beforeAdding(function(registrationData) {
@@ -222,7 +221,7 @@ var _arrive_unique_id_ = 0;
 
         if (utils.matchesSelector(node, registrationData.selector)) {
             if(node._id === undefined) {
-              node._id = _arrive_unique_id_++;
+              node._id = arriveUniqueId++;
             }
             // make sure the arrive event is not already fired for the element
             if (registrationData.firedElems.indexOf(node._id) == -1) {
@@ -258,7 +257,7 @@ var _arrive_unique_id_ = 0;
       else if (mutation.type === "attributes") {
           if(utils.matchesSelector(targetNode, registrationData.selector)) {
             if(targetNode._id === undefined){
-                targetNode._id = _arrive_unique_id_++;
+                targetNode._id = arriveUniqueId++;
             }
             // make sure the arrive event is not already fired for the element
             if (registrationData.firedElems.indexOf(targetNode._id) == -1) {
