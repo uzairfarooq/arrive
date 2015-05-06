@@ -160,6 +160,48 @@ describe("Arrive", function() {
                 }, 400);
             });
         });
+
+        describe("Multiple events tests.", function() {
+            var selector = ".test-elem",
+                appendedElem = "<div class='test-elem'></div>";
+
+            beforeEach(function() {
+                j(document).unbindArrive();
+            });
+
+            it("Multiple callbacks can be called for a single registration", function(done) {
+                var callCount = 0;
+
+                j(document).arrive(selector, function() {
+                    callCount += 1;
+
+                    if (callCount >= 2) {
+                      expect(true).toBe(true);
+                      done();
+                    }
+                });
+
+                $("body").append(appendedElem);
+                $("body").append(appendedElem);
+            });
+
+            it("onceOnly argument prevents multiple callbacks for a single registration", function(done) {
+                var callCount = 0;
+
+                j(document).arrive(selector, {onceOnly: true}, function() {
+                    callCount += 1;
+                });
+
+                $("body").append(appendedElem);
+                $("body").append(appendedElem);
+
+                setTimeout(function() {
+                    expect(callCount).toBe(1);
+                    done();
+                }, 400);
+
+            });
+        });
     });
 
     describe("Leave Event Tests", function() {

@@ -64,7 +64,8 @@ Arrive watches for subtree modifications of the element you bind the event to. S
 As of v2.0 `arrive` event accepts an optional `options` object as 2nd argument. Options object consists of following:
 ```javascript
 var options = {
-    fireOnAttributesModification: boolean // Defaults to false. Setting it to true would make arrive event fire on existing elements which start to satisfy selector after some modification in DOM. If false, id'd only fire for newly created elements.
+    fireOnAttributesModification: boolean, // Defaults to false. Setting it to true would make arrive event fire on existing elements which start to satisfy selector after some modification in DOM. If false, id'd only fire for newly created elements.
+    onceOnly: boolean                      // Defaults to false. Setting it to true would ensure that registered callbacks fire only once.
 };
 ```
 Example:

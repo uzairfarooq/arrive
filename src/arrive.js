@@ -118,6 +118,7 @@
       observer.observe(target, config);
 
       registrationData.observer = observer;
+      registrationData.me = me;
     });
 
     // cleanup/unregister before removing an event
@@ -136,6 +137,8 @@
       if (typeof callback === "undefined") {
         callback = options;
         options = defaultOptions;
+      } else {
+        options = mergeOptions(defaultOptions, options);
       }
 
       var elements = toArray(this);
@@ -220,6 +223,18 @@
       }
       // make sure the arrive event is not already fired for the element
       if (registrationData.firedElems.indexOf(node._id) == -1) {
+
+        if (registrationData.options.onceOnly) {
+          if (registrationData.firedElems.length === 0) {
+            // On first callback, unbind event.
+            registrationData.me.unbindEventWithSelectorAndCallback.call(
+              registrationData.target, registrationData.selector, registrationData.callback);
+          } else {
+            // Ignore multiple mutations which may have been queued before the event was unbound.
+            return;
+          }
+        }
+
         registrationData.firedElems.push(node._id);
         callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
       }
@@ -308,10 +323,22 @@
     return config;
   }
       
+  function mergeOptions(defaultOpts, userOpts){
+      // Overwrites default options with user-defined options.
+      var options = {};
+      for (var attrname in defaultOpts) {
+        options[attrname] = defaultOpts[attrname];
+      }
+      for (var attrname in userOpts) {
+        options[attrname] = userOpts[attrname];
+      }
+      return options;
+  }
 
   // Default options
   var arriveDefaultOptions = {
-        fireOnAttributesModification: false
+        fireOnAttributesModification: false,
+        onceOnly: false
       }, 
       leaveDefaultOptions = {};
 
