@@ -15,6 +15,8 @@
     return; //for unsupported browsers
   }
 
+	var arriveUniqueId = 0;
+
   var utils = (function() {
     var matches = HTMLElement.prototype.matches || HTMLElement.prototype.webkitMatchesSelector || HTMLElement.prototype.mozMatchesSelector
                   || HTMLElement.prototype.msMatchesSelector;
@@ -92,8 +94,7 @@
   // General class for binding/unbinding arrive and leave events
   var MutationEvents = function(getObserverConfig, defaultOptions, onMutation) {
     var eventsBucket    = new EventsBucket(), 
-        me              = this, 
-        arriveUniqueId  = 0;
+        me              = this;
 
     // actual event registration before adding it to bucket
     eventsBucket.beforeAdding(function(registrationData) {
