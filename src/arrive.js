@@ -39,7 +39,7 @@
   })();
 
 
-  // Class to mantain state of all registered events of a single type
+  // Class to maintain state of all registered events of a single type
   var EventsBucket = (function() {
     var EventsBucket = function() {
       // holds all the events
