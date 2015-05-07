@@ -91,7 +91,10 @@
   })();
 
 
-  // General class for binding/unbinding arrive and leave events
+	/**
+	 * @constructor
+	 * General class for binding/unbinding arrive and leave events
+	 */
   var MutationEvents = function(getObserverConfig, defaultOptions, onMutation) {
     var eventsBucket    = new EventsBucket(), 
         me              = this;
