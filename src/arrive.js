@@ -118,6 +118,7 @@
       observer.observe(target, config);
 
       registrationData.observer = observer;
+      registrationData.me = me;
     });
 
     // cleanup/unregister before removing an event
@@ -136,6 +137,8 @@
       if (typeof callback === "undefined") {
         callback = options;
         options = defaultOptions;
+      } else {
+        options = mergeOptions(defaultOptions, options);
       }
 
       var elements = toArray(this);
@@ -212,6 +215,32 @@
     return node._shouldBeIgnored;
   }
 
+  function checkNode(node, registrationData, callbacksToBeCalled) {
+    // check a single node to see if it matches the selector
+    if (utils.matchesSelector(node, registrationData.selector)) {
+      if(node._id === undefined) {
+        node._id = arriveUniqueId++;
+      }
+      // make sure the arrive event is not already fired for the element
+      if (registrationData.firedElems.indexOf(node._id) == -1) {
+
+        if (registrationData.options.onceOnly) {
+          if (registrationData.firedElems.length === 0) {
+            // On first callback, unbind event.
+            registrationData.me.unbindEventWithSelectorAndCallback.call(
+              registrationData.target, registrationData.selector, registrationData.callback);
+          } else {
+            // Ignore multiple mutations which may have been queued before the event was unbound.
+            return;
+          }
+        }
+
+        registrationData.firedElems.push(node._id);
+        callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
+      }
+    }
+  }
+
   // traverse through all descendants of a node to check if event should be fired for any descendant
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
@@ -220,16 +249,8 @@
             continue;
         }
 
-        if (utils.matchesSelector(node, registrationData.selector)) {
-            if(node._id === undefined) {
-              node._id = arriveUniqueId++;
-            }
-            // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(node._id) == -1) {
-              registrationData.firedElems.push(node._id);
-              callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
-            }
-        }
+        checkNode(node, registrationData, callbacksToBeCalled);
+
         if (node.childNodes.length > 0) {
             checkChildNodesRecursively(node.childNodes, registrationData, callbacksToBeCalled);
         }
@@ -256,16 +277,7 @@
         checkChildNodesRecursively(newNodes, registrationData, callbacksToBeCalled);
       }
       else if (mutation.type === "attributes") {
-          if(utils.matchesSelector(targetNode, registrationData.selector)) {
-            if(targetNode._id === undefined){
-                targetNode._id = arriveUniqueId++;
-            }
-            // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(targetNode._id) == -1) {
-              registrationData.firedElems.push(targetNode._id);
-              callbacksToBeCalled.push({ callback: registrationData.callback, elem: targetNode });
-            }
-          }
+        checkNode(targetNode, registrationData, callbacksToBeCalled);
       }
 
       callCallbacks(callbacksToBeCalled);
@@ -311,10 +323,22 @@
     return config;
   }
       
+  function mergeOptions(defaultOpts, userOpts){
+      // Overwrites default options with user-defined options.
+      var options = {};
+      for (var attrname in defaultOpts) {
+        options[attrname] = defaultOpts[attrname];
+      }
+      for (var attrname in userOpts) {
+        options[attrname] = userOpts[attrname];
+      }
+      return options;
+  }
 
   // Default options
   var arriveDefaultOptions = {
-        fireOnAttributesModification: false
+        fireOnAttributesModification: false,
+        onceOnly: false
       }, 
       leaveDefaultOptions = {};
 
