@@ -370,4 +370,4 @@
   exposeApi(HTMLDocument.prototype);
   exposeApi(Window.prototype);
 
-})(this, typeof jQuery === 'undefined' ? null : jQuery);
+})(this, typeof jQuery === 'undefined' ? null : jQuery, undefined);
