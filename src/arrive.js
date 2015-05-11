@@ -1,13 +1,11 @@
 /*
  * arrive.js
- * v2.1.0
+ * v2.2.0
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
  * Copyright (c) 2014-2015 Uzair Farooq
  */
-
-var _arrive_unique_id_ = 0;
 
 (function(window, $, undefined) {
 
@@ -16,6 +14,8 @@ var _arrive_unique_id_ = 0;
   if(!window.MutationObserver || typeof HTMLElement === 'undefined'){
     return; //for unsupported browsers
   }
+
+  var arriveUniqueId = 0;
 
   var utils = (function() {
     var matches = HTMLElement.prototype.matches || HTMLElement.prototype.webkitMatchesSelector || HTMLElement.prototype.mozMatchesSelector
@@ -39,7 +39,7 @@ var _arrive_unique_id_ = 0;
   })();
 
 
-  // Class to mantain state of all registered events of a single type
+  // Class to maintain state of all registered events of a single type
   var EventsBucket = (function() {
     var EventsBucket = function() {
       // holds all the events
@@ -91,10 +91,13 @@ var _arrive_unique_id_ = 0;
   })();
 
 
-  // General class for binding/unbinding arrive and leave events
+	/**
+	 * @constructor
+	 * General class for binding/unbinding arrive and leave events
+	 */
   var MutationEvents = function(getObserverConfig, defaultOptions, onMutation) {
-    var eventsBucket  = new EventsBucket(), 
-        me            = this;
+    var eventsBucket    = new EventsBucket(), 
+        me              = this;
 
     // actual event registration before adding it to bucket
     eventsBucket.beforeAdding(function(registrationData) {
@@ -118,6 +121,7 @@ var _arrive_unique_id_ = 0;
       observer.observe(target, config);
 
       registrationData.observer = observer;
+      registrationData.me = me;
     });
 
     // cleanup/unregister before removing an event
@@ -136,6 +140,8 @@ var _arrive_unique_id_ = 0;
       if (typeof callback === "undefined") {
         callback = options;
         options = defaultOptions;
+      } else {
+        options = mergeOptions(defaultOptions, options);
       }
 
       var elements = toArray(this);
@@ -199,37 +205,38 @@ var _arrive_unique_id_ = 0;
     return this;
   };
 
-  function shouldBeIgnored(node){
-    if(node._shouldBeIgnored === undefined){
-        if ((' '+node.className+' ').indexOf(' ignore-arrive ') != -1){
-            return node._shouldBeIgnored = true;
+  function checkNode(node, registrationData, callbacksToBeCalled) {
+    // check a single node to see if it matches the selector
+    if (utils.matchesSelector(node, registrationData.selector)) {
+      if(node._id === undefined) {
+        node._id = arriveUniqueId++;
+      }
+      // make sure the arrive event is not already fired for the element
+      if (registrationData.firedElems.indexOf(node._id) == -1) {
+
+        if (registrationData.options.onceOnly) {
+          if (registrationData.firedElems.length === 0) {
+            // On first callback, unbind event.
+            registrationData.me.unbindEventWithSelectorAndCallback.call(
+              registrationData.target, registrationData.selector, registrationData.callback);
+          } else {
+            // Ignore multiple mutations which may have been queued before the event was unbound.
+            return;
+          }
         }
-        if (node.parentNode == null){
-            return node._shouldBeIgnored = false;
-        }
-        return node._shouldBeIgnored = shouldBeIgnored(node.parentNode);
+
+        registrationData.firedElems.push(node._id);
+        callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
+      }
     }
-    return node._shouldBeIgnored;
   }
 
   // traverse through all descendants of a node to check if event should be fired for any descendant
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
-        if (shouldBeIgnored(node)) {
-            continue;
-        }
+        checkNode(node, registrationData, callbacksToBeCalled);
 
-        if (utils.matchesSelector(node, registrationData.selector)) {
-            if(node._id === undefined) {
-              node._id = _arrive_unique_id_++;
-            }
-            // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(node._id) == -1) {
-              registrationData.firedElems.push(node._id);
-              callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
-            }
-        }
         if (node.childNodes.length > 0) {
             checkChildNodesRecursively(node.childNodes, registrationData, callbacksToBeCalled);
         }
@@ -244,9 +251,6 @@ var _arrive_unique_id_ = 0;
 
   function onArriveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
-      if (shouldBeIgnored(mutation.target)) {
-          return;
-      }
       var newNodes    = mutation.addedNodes, 
           targetNode = mutation.target, 
           callbacksToBeCalled = [];
@@ -256,16 +260,7 @@ var _arrive_unique_id_ = 0;
         checkChildNodesRecursively(newNodes, registrationData, callbacksToBeCalled);
       }
       else if (mutation.type === "attributes") {
-          if(utils.matchesSelector(targetNode, registrationData.selector)) {
-            if(targetNode._id === undefined){
-                targetNode._id = _arrive_unique_id_++;
-            }
-            // make sure the arrive event is not already fired for the element
-            if (registrationData.firedElems.indexOf(targetNode._id) == -1) {
-              registrationData.firedElems.push(targetNode._id);
-              callbacksToBeCalled.push({ callback: registrationData.callback, elem: targetNode });
-            }
-          }
+        checkNode(targetNode, registrationData, callbacksToBeCalled);
       }
 
       callCallbacks(callbacksToBeCalled);
@@ -274,9 +269,6 @@ var _arrive_unique_id_ = 0;
 
   function onLeaveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
-      if (shouldBeIgnored(mutation.target)) {
-          return;
-      }
       var removedNodes  = mutation.removedNodes, 
           targetNode   = mutation.target, 
           callbacksToBeCalled = [];
@@ -311,10 +303,22 @@ var _arrive_unique_id_ = 0;
     return config;
   }
       
+  function mergeOptions(defaultOpts, userOpts){
+      // Overwrites default options with user-defined options.
+      var options = {};
+      for (var attrname in defaultOpts) {
+        options[attrname] = defaultOpts[attrname];
+      }
+      for (var attrname in userOpts) {
+        options[attrname] = userOpts[attrname];
+      }
+      return options;
+  }
 
   // Default options
   var arriveDefaultOptions = {
-        fireOnAttributesModification: false
+        fireOnAttributesModification: false,
+        onceOnly: false
       }, 
       leaveDefaultOptions = {};
 
@@ -346,4 +350,4 @@ var _arrive_unique_id_ = 0;
   exposeApi(HTMLDocument.prototype);
   exposeApi(Window.prototype);
 
-})(this, typeof jQuery === 'undefined' ? null : jQuery);
+})(this, typeof jQuery === 'undefined' ? null : jQuery, undefined);
