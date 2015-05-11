@@ -25,7 +25,7 @@
       matchesSelector: function(elem, selector) {
         return elem instanceof HTMLElement && matches.call(elem, selector);
       }, 
-      // to enable function overriding - By John Resig (MIT Licensed)
+      // to enable function overloading - By John Resig (MIT Licensed)
       addMethod: function (object, name, fn) {
         var old = object[ name ];
         object[ name ] = function(){
