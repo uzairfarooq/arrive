@@ -205,19 +205,6 @@
     return this;
   };
 
-  function shouldBeIgnored(node){
-    if(node._shouldBeIgnored === undefined){
-        if ((' '+node.className+' ').indexOf(' ignore-arrive ') != -1){
-            return node._shouldBeIgnored = true;
-        }
-        if (node.parentNode == null){
-            return node._shouldBeIgnored = false;
-        }
-        return node._shouldBeIgnored = shouldBeIgnored(node.parentNode);
-    }
-    return node._shouldBeIgnored;
-  }
-
   function checkNode(node, registrationData, callbacksToBeCalled) {
     // check a single node to see if it matches the selector
     if (utils.matchesSelector(node, registrationData.selector)) {
@@ -248,10 +235,6 @@
   function checkChildNodesRecursively(nodes, registrationData, callbacksToBeCalled) {
     // check each new node if it matches the selector
     for (var i=0, node; node = nodes[i]; i++) {
-        if (shouldBeIgnored(node)) {
-            continue;
-        }
-
         checkNode(node, registrationData, callbacksToBeCalled);
 
         if (node.childNodes.length > 0) {
@@ -268,9 +251,6 @@
 
   function onArriveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
-      if (shouldBeIgnored(mutation.target)) {
-          return;
-      }
       var newNodes    = mutation.addedNodes, 
           targetNode = mutation.target, 
           callbacksToBeCalled = [];
@@ -289,9 +269,6 @@
 
   function onLeaveMutation(mutations, registrationData) {
     mutations.forEach(function( mutation ) {
-      if (shouldBeIgnored(mutation.target)) {
-          return;
-      }
       var removedNodes  = mutation.removedNodes, 
           targetNode   = mutation.target, 
           callbacksToBeCalled = [];
