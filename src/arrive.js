@@ -145,6 +145,23 @@
       }
 
       var elements = toArray(this);
+
+      if (options.existing) {
+        var existing = [];
+        for (var i = 0; i < elements.length; i++) {
+          var nodes = elements[i].querySelectorAll(selector);
+          for (var j = 0; j < nodes.length; j++) {
+            existing.push(nodes[j]);
+          }
+        }
+        if (options.onceOnly && existing.length) {
+          return callback.call(existing[0]);
+        }
+        for (var i = 0; i < existing.length; i++) {
+          callback.call(existing[i]);
+        }
+      }
+
       for (var i = 0; i < elements.length; i++) {
         eventsBucket.addEvent(elements[i], selector, options, callback);
       }

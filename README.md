@@ -62,7 +62,8 @@ As of v2.0 `arrive` event accepts an optional `options` object as 2nd argument. 
 ```javascript
 var options = {
     fireOnAttributesModification: boolean, // Defaults to false. Setting it to true would make arrive event fire on existing elements which start to satisfy selector after some modification in DOM attributes (an arrive event won't fire twice for a single element even if the option is true). If false, it'd only fire for newly created elements.
-    onceOnly: boolean                      // Defaults to false. Setting it to true would ensure that registered callbacks fire only once.
+    onceOnly: boolean                      // Defaults to false. Setting it to true would ensure that registered callbacks fire only once. No need to unbind the event if the attribute is set to true, it'll automatically unbind after firing once.
+    existing: boolean                      // Defaults to false. Setting it to true would ensure that the registered callback fire for the elements already existing in the DOM and matching the selector. If options.onceOnly is set, the callback is only called once with the first element matching the selector before being unbound.
 };
 ```
 Example:

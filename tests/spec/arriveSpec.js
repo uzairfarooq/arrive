@@ -15,7 +15,24 @@ describe("Arrive", function() {
                 });
                 $("body").append($appendedElem);
             });
+        });
 
+        describe("options.existing", function() {
+            var selector = ".test-existing";
+
+            it("should return existing elements if it equals true", function(done) {
+                var $existingElementA = $("<div class='" + selector.substring(1) + "'></div>");
+                var $existingElementB = $existingElementA.clone();
+                $("body").append($existingElementA).append($existingElementB);
+
+                var count = 0;
+                j(document).arrive(selector, { existing: true }, function() {
+                    expect(this).toBe(!count ? $existingElementA[0] : $existingElementB[0]);
+                    if ((count += 1) === 2) {
+                        done();
+                    }
+                });
+            });
         });
 
         describe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
