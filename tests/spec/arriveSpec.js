@@ -176,7 +176,7 @@ describe("Arrive", function() {
             var selector = ".test-elem",
                 appendedElem = "<div class='test-elem'></div>";
 
-            it("Multiple callbacks can be called for a single registration", function(done) {
+            it("Callback should be called multiple times when multiple elements are injected", function(done) {
                 var callCount = 0;
 
                 j(document).arrive(selector, function() {
