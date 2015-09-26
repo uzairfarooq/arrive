@@ -326,12 +326,13 @@
       
   function mergeOptions(defaultOpts, userOpts){
       // Overwrites default options with user-defined options.
-      var options = {};
-      for (var attrname in defaultOpts) {
-        options[attrname] = defaultOpts[attrname];
+      var options = {},
+          attrName;
+      for (attrName in defaultOpts) {
+        options[attrName] = defaultOpts[attrName];
       }
-      for (var attrname in userOpts) {
-        options[attrname] = userOpts[attrname];
+      for (attrName in userOpts) {
+        options[attrName] = userOpts[attrName];
       }
       return options;
   }
