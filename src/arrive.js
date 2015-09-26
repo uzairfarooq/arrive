@@ -130,7 +130,9 @@
     });
 
     function toArray(elements) {
-      if (typeof elements.length !== "number") {
+      // check if object is an array (or array like object)
+      // Note: window object has .length property but it's not array of elements so don't consider it an array
+      if (typeof elements.length !== "number" || elements === window) {
         elements = [elements];
       }
       return elements;

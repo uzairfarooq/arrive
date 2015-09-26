@@ -4,12 +4,28 @@ describe("Arrive", function() {
 
     describe("Arrive Event Tests", function() {
 
-        describe("Selector involving single element: .test-elem", function() {
+        describe("Binding events to different element types:", function() {
+            var selector = ".test-elem";
+
+            it("event should be fired when 'arrive' event is binded to window", function(done) {
+                var $appendedElem = $("<div class='test-elem'></div>");
+
+                j(window).arrive(selector, function() {
+                    j(window).unbindArrive();
+                    expect(this).toBe($appendedElem[0]);
+                    done();
+                });
+                $("body").append($appendedElem);
+            });
+        });
+
+        describe("Selector involving single element:", function() {
             var selector = ".test-elem";
 
             it("event should be fired when element with specified class is injected to DOM", function(done) {
                 var $appendedElem = $("<div class='test-elem'></div>");
                 j(document).arrive(selector, function() {
+                    j(document).unbindArrive();
                     expect(this).toBe($appendedElem[0]);
                     done();
                 });
