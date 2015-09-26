@@ -7,7 +7,7 @@
  * Copyright (c) 2014-2015 Uzair Farooq
  */
 
-(function(window, $, undefined) {
+var Arrive = (function(window, $, undefined) {
 
   "use strict";
 
@@ -175,7 +175,7 @@
       var elements = toArray(this);
       eventsBucket.removeEvent(function(eventObj) {
         for (var i = 0; i < elements.length; i++) {
-          if (eventObj.target === elements[i]) {
+          if (this === undefined || eventObj.target === elements[i]) {
             return true;
           }
         }
@@ -191,7 +191,7 @@
       if (typeof selector === "function") {
         compareFunction = function(eventObj) {
           for (var i = 0; i < elements.length; i++) {
-            if (eventObj.target === elements[i] && eventObj.callback === callback) {
+            if ((this === undefined || eventObj.target === elements[i]) && eventObj.callback === callback) {
               return true;
             }
           }
@@ -201,7 +201,7 @@
       else {
         compareFunction = function(eventObj) {
           for (var i = 0; i < elements.length; i++) {
-            if (eventObj.target === elements[i] && eventObj.selector === selector) {
+            if ((this === undefined || eventObj.target === elements[i]) && eventObj.selector === selector) {
               return true;
             }
           }
@@ -215,7 +215,7 @@
       var elements = toArray(this);
       eventsBucket.removeEvent(function(eventObj) {
           for (var i = 0; i < elements.length; i++) {
-            if (eventObj.target === elements[i] && eventObj.selector === selector && eventObj.callback === callback) {
+            if ((this === undefined || eventObj.target === elements[i]) && eventObj.selector === selector && eventObj.callback === callback) {
               return true;
             }
           }
@@ -347,20 +347,20 @@
   var arriveEvents = new MutationEvents(getArriveObserverConfig, arriveDefaultOptions, onArriveMutation), 
       leaveEvents  = new MutationEvents(getLeaveObserverConfig, leaveDefaultOptions, onLeaveMutation);
 
+  function exposeUnbindApi(eventObj, exposeTo, funcName) {
+    // expose unbindArrive function with overriding
+    utils.addMethod(exposeTo, funcName, eventObj.unbindEvent);
+    utils.addMethod(exposeTo, funcName, eventObj.unbindEventWithSelectorOrCallback);
+    utils.addMethod(exposeTo, funcName, eventObj.unbindEventWithSelectorAndCallback);
+  }
 
   /*** expose APIs ***/
   function exposeApi(exposeTo) {
     exposeTo.arrive = arriveEvents.bindEvent;
-    // expose unbindArrive function with overriding 
-    utils.addMethod(exposeTo, "unbindArrive", arriveEvents.unbindEvent);
-    utils.addMethod(exposeTo, "unbindArrive", arriveEvents.unbindEventWithSelectorOrCallback);
-    utils.addMethod(exposeTo, "unbindArrive", arriveEvents.unbindEventWithSelectorAndCallback);
+    exposeUnbindApi(arriveEvents, exposeTo, "unbindArrive");
 
     exposeTo.leave = leaveEvents.bindEvent;
-    // expose unbindLeave function with overriding 
-    utils.addMethod(exposeTo, "unbindLeave", leaveEvents.unbindEvent);
-    utils.addMethod(exposeTo, "unbindLeave", leaveEvents.unbindEventWithSelectorOrCallback);
-    utils.addMethod(exposeTo, "unbindLeave", leaveEvents.unbindEventWithSelectorAndCallback);
+    exposeUnbindApi(leaveEvents, exposeTo, "unbindLeave");
   }
 
   if ($) {
@@ -371,5 +371,12 @@
   exposeApi(HTMLCollection.prototype);
   exposeApi(HTMLDocument.prototype);
   exposeApi(Window.prototype);
+
+  var Arrive = {};
+  // expose functions to unbind all arrive/leave events
+  exposeUnbindApi(arriveEvents, Arrive, "unbindArriveAll");
+  exposeUnbindApi(leaveEvents, Arrive, "unbindLeaveAll");
+
+  return Arrive;
 
 })(this, typeof jQuery === 'undefined' ? null : jQuery, undefined);

@@ -2,6 +2,12 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
 
 describe("Arrive", function() {
 
+    beforeEach(function() {
+        // clear all binded events before running each test case
+        Arrive.unbindArriveAll();
+        Arrive.unbindLeaveAll();
+    });
+
     describe("Arrive Event Tests", function() {
 
         describe("Binding events to different element types:", function() {
@@ -11,7 +17,6 @@ describe("Arrive", function() {
                 var $appendedElem = $("<div class='test-elem'></div>");
 
                 j(window).arrive(selector, function() {
-                    j(window).unbindArrive();
                     expect(this).toBe($appendedElem[0]);
                     done();
                 });
@@ -25,7 +30,6 @@ describe("Arrive", function() {
             it("event should be fired when element with specified class is injected to DOM", function(done) {
                 var $appendedElem = $("<div class='test-elem'></div>");
                 j(document).arrive(selector, function() {
-                    j(document).unbindArrive();
                     expect(this).toBe($appendedElem[0]);
                     done();
                 });
@@ -41,7 +45,6 @@ describe("Arrive", function() {
                 var $appendedElem   = $("<div class='container2'><span class='btn red'></span></div>"), 
                     $redBtn         = $appendedElem.find(".btn.red");
 
-                j(document).unbindArrive();
                 j(document).arrive(selector, function() {
                     expect(this).toBe($redBtn[0]);
                     done();
@@ -55,7 +58,6 @@ describe("Arrive", function() {
 
                 var $redBtn = $("<span class='btn red'></span>");
 
-                j(document).unbindArrive();
                 j(document).arrive(selector, function() {
                     expect(this).toBe($redBtn[0]);
                     done();
@@ -74,7 +76,6 @@ describe("Arrive", function() {
             $("body").append($elem);
 
             it("Event should be fired when a class is added to an element and the element starts to satisfies event selector", function(done) {
-                j(document).unbindArrive();
                 j(document).arrive(".container5 .btn.red", { fireOnAttributesModification: true }, function() {
                     expect(this).toBe($btn[0]);
                     done();
@@ -83,7 +84,6 @@ describe("Arrive", function() {
             });
 
             it("Event should be fired when tooltip is added to an element and the element starts to satisfies event selector", function(done) {
-                j(document).unbindArrive();
                 j(document).arrive(".container5 .btn[title='it works!']", { fireOnAttributesModification: true } , function() {
                     expect(this).toBe($btn[0]);
                     done(); 
@@ -92,8 +92,6 @@ describe("Arrive", function() {
             });
 
             it("Event should be not fired when a class is added to an element and the element starts to satisfies event selector but fireOnAttributesModification option is false", function(done) {
-                j(document).unbindArrive();
-
                 var eventFired = false;
                 j(document).arrive(".container5 .btn.red", function() {
                     eventFired = true;
@@ -107,8 +105,6 @@ describe("Arrive", function() {
             });
 
             it("Event should be not fired when tooltip is added to an element and the element starts to satisfies event selector but fireOnAttributesModification option is false", function(done) {
-                j(document).unbindArrive();
-
                 var eventFired = false;
                 j(document).arrive(".container5 .btn[title='it works!']", function() {
                     eventFired = true;
@@ -179,10 +175,6 @@ describe("Arrive", function() {
         describe("Multiple events tests.", function() {
             var selector = ".test-elem",
                 appendedElem = "<div class='test-elem'></div>";
-
-            beforeEach(function() {
-                j(document).unbindArrive();
-            });
 
             it("Multiple callbacks can be called for a single registration", function(done) {
                 var callCount = 0;
@@ -267,7 +259,6 @@ describe("Arrive", function() {
             });
 
             it("event should be fired when a tree is removed and it contains an element which satisfy the selector", function(done) {
-                j(document).unbindLeave();
                 j(document).leave(selector, function() {
                     expect(this).toBe($redBtn[0]);
                     done();
@@ -276,7 +267,6 @@ describe("Arrive", function() {
             });
 
             it("event should be fired when target element is directly removed from DOM", function(done) {
-                j(document).unbindLeave();
                 j(document).leave(selector, function() {
                     expect(this).toBe($redBtn[0]);
                     done();
