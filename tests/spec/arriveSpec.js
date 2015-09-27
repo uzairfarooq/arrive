@@ -4,8 +4,8 @@ describe("Arrive", function() {
 
     beforeEach(function() {
         // clear all binded events before running each test case
-        Arrive.unbindArriveAll();
-        Arrive.unbindLeaveAll();
+        Arrive.unbindAllArrive();
+        Arrive.unbindAllLeave();
     });
 
     describe("Arrive Event Tests", function() {

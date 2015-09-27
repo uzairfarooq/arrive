@@ -374,8 +374,8 @@ var Arrive = (function(window, $, undefined) {
 
   var Arrive = {};
   // expose functions to unbind all arrive/leave events
-  exposeUnbindApi(arriveEvents, Arrive, "unbindArriveAll");
-  exposeUnbindApi(leaveEvents, Arrive, "unbindLeaveAll");
+  exposeUnbindApi(arriveEvents, Arrive, "unbindAllArrive");
+  exposeUnbindApi(leaveEvents, Arrive, "unbindAllLeave");
 
   return Arrive;
 
