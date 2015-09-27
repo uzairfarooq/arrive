@@ -233,7 +233,7 @@ describe("Arrive", function() {
         var selector = ".test-elem";
 
         it("event should be fired when element with specified class is removed from DOM", function(done) {
-            $(".test-elem").remove(); // remove any previous test element in DOM
+            $(selector).remove(); // remove any previous test element in DOM
 
             var $toBeRemoved = $("<div><div class='test-elem'></div></div>"), 
                 $testElem    = $toBeRemoved.find(".test-elem");
@@ -244,7 +244,7 @@ describe("Arrive", function() {
                 done();
             });
 
-            $(".test-elem").remove();
+            $(selector).remove();
         });
 
         describe("Selector involving nested elements: div.container1 .container2 .btn.red", function() {
