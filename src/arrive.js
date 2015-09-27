@@ -348,7 +348,7 @@ var Arrive = (function(window, $, undefined) {
       leaveEvents  = new MutationEvents(getLeaveObserverConfig, leaveDefaultOptions, onLeaveMutation);
 
   function exposeUnbindApi(eventObj, exposeTo, funcName) {
-    // expose unbindArrive function with overriding
+    // expose unbind function with function overriding
     utils.addMethod(exposeTo, funcName, eventObj.unbindEvent);
     utils.addMethod(exposeTo, funcName, eventObj.unbindEventWithSelectorOrCallback);
     utils.addMethod(exposeTo, funcName, eventObj.unbindEventWithSelectorAndCallback);
