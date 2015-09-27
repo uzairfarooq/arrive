@@ -248,7 +248,8 @@ var Arrive = (function(window, $, undefined) {
     // Default options for 'arrive' event
     var arriveDefaultOptions = {
       fireOnAttributesModification: false,
-      onceOnly: false
+      onceOnly: false,
+      existing: false
     };
 
     function getArriveObserverConfig(options) {
