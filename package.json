@@ -17,7 +17,8 @@
     "jquery",
     "javascript",
     "browser",
-    "library"
+    "library",
+    "js"
   ],
   "author": "Uzair Farooq <uzair.farooq@outlook.com>",
   "license": "MIT",
