@@ -213,7 +213,11 @@ describe("Arrive", function() {
         describe("options.existing", function() {
             var selector = ".test-existing";
 
-            it("should return existing elements if it equals true", function(done) {
+            beforeEach(function() {
+                $(".test-existing").remove();
+            });
+
+            it("callback should be called for existing element if options.existing is true", function(done) {
                 var $existingElementA = $("<div class='" + selector.substring(1) + "'></div>");
                 var $existingElementB = $existingElementA.clone();
                 $("body").append($existingElementA).append($existingElementB);
@@ -224,6 +228,17 @@ describe("Arrive", function() {
                     if ((count += 1) === 2) {
                         done();
                     }
+                });
+            });
+
+            it("callback should be called for one existing element only if options.existing and options.onceOnly both are true", function(done) {
+                var $existingElementA = $("<div class='" + selector.substring(1) + "'></div>");
+                var $existingElementB = $existingElementA.clone();
+                $("body").append($existingElementA).append($existingElementB);
+
+                j(document).arrive(selector, { existing: true, onceOnly: true }, function() {
+                    expect(this).toBe($existingElementA[0]);
+                    done();
                 });
             });
         });

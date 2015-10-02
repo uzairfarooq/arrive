@@ -340,7 +340,7 @@ var Arrive = (function(window, $, undefined) {
 
         // no need to bind event if the callback has to be fired only once and we have already found the element
         if (options.onceOnly && existing.length) {
-          return callback.call(existing[0]);
+          return callback.call(existing[0].elem);
         }
 
         utils.callCallbacks(existing)
