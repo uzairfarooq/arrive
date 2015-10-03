@@ -62,6 +62,9 @@ $(document).unbindArrive(callbackFunc);
 
 // unbind only a specific callback on ".test-elem" selector
 $(document).unbindArrive(".test-elem", callbackFunc);
+
+// unbind all arrive events
+Arrive.unbindAllArrive();
 ```
 
 ####Options
@@ -92,7 +95,16 @@ $(".container-1").leave(".test-elem", function() {
 });
 ```
 
-You can unbind the `leave` event in the same way as `arrive` event, using `unbindLeave` function.
+You can unbind the `leave` event in the same way as `arrive` event, using `unbindLeave` function i.e:
+
+```javascript
+// unbind all leave events on document element
+$(document).unbindLeave();
+
+// unbind all leave events
+Arrive.unbindAllLeave();
+```
+
 
 ##Browser Support
 arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) which is introduced in DOM4. It's supported in latest versions of all popular browsers.
