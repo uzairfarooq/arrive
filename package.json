@@ -1,5 +1,5 @@
 {
-  "name": "arrive.js",
+  "name": "arrive",
   "version": "2.3.0",
   "description": "arrive.js provides events to watch for DOM elements creation and removal. It makes use of Mutation Observers internally.",
   "main": "src/arrive.js",
@@ -16,9 +16,14 @@
   "keywords": [
     "jquery",
     "javascript",
-    "browser",
-    "library",
-    "js"
+    "js",
+    "watch",
+    "dynamic",
+    "creation",
+    "new",
+    "element",
+    "insertion",
+    "listen"
   ],
   "author": "Uzair Farooq <uzair.farooq@outlook.com>",
   "license": "MIT",

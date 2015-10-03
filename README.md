@@ -134,3 +134,7 @@ If you want ot contribute to arrive, here is the workflow you should use:
 8. Submit a pull request from your repo back to the original repository.
 9. Once it is accepted, remember to pull those changes back into your develop branch!
 
+
+**Keywords**
+
+javascript, js, jquery, node.js, watch, listen, creation, dynamically, removal, new, elements, DOM, dynamic, detect, insertions, event, bind, live, livequery
