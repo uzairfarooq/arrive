@@ -11,6 +11,13 @@ or use [Bower](http://bower.io/) to install:
 $ bower install arrive --save
 ```
 
+##### Node.js / NPM
+Node.js users can install using npm:
+
+```bash
+$ npm install arrive --save
+```
+
 ## Usage
 **The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
 ###Watch for elements creation
