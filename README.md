@@ -11,6 +11,13 @@ or use [Bower](http://bower.io/) to install:
 $ bower install arrive --save
 ```
 
+##### Node.js / NPM
+Node.js users can install using npm:
+
+```bash
+$ npm install arrive --save
+```
+
 ## Usage
 **The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
 ###Watch for elements creation
@@ -55,6 +62,9 @@ $(document).unbindArrive(callbackFunc);
 
 // unbind only a specific callback on ".test-elem" selector
 $(document).unbindArrive(".test-elem", callbackFunc);
+
+// unbind all arrive events
+Arrive.unbindAllArrive();
 ```
 
 ####Options
@@ -63,6 +73,7 @@ As of v2.0 `arrive` event accepts an optional `options` object as 2nd argument. 
 var options = {
     fireOnAttributesModification: boolean, // Defaults to false. Setting it to true would make arrive event fire on existing elements which start to satisfy selector after some modification in DOM attributes (an arrive event won't fire twice for a single element even if the option is true). If false, it'd only fire for newly created elements.
     onceOnly: boolean                      // Defaults to false. Setting it to true would ensure that registered callbacks fire only once. No need to unbind the event if the attribute is set to true, it'll automatically unbind after firing once.
+    existing: boolean                      // Defaults to false. Setting it to true would ensure that the registered callback is fired for the elements that already exists in the DOM and match the selector. If options.onceOnly is set, the callback is only called once with the first element matching the selector.
 };
 ```
 Example:
@@ -84,7 +95,16 @@ $(".container-1").leave(".test-elem", function() {
 });
 ```
 
-You can unbind the `leave` event in the same way as `arrive` event, using `unbindLeave` function.
+You can unbind the `leave` event in the same way as `arrive` event, using `unbindLeave` function i.e:
+
+```javascript
+// unbind all leave events on document element
+$(document).unbindLeave();
+
+// unbind all leave events
+Arrive.unbindAllLeave();
+```
+
 
 ##Browser Support
 arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) which is introduced in DOM4. It's supported in latest versions of all popular browsers.
