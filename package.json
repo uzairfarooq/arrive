@@ -1,6 +1,6 @@
 {
   "name": "arrive.js",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "arrive.js provides events to watch for DOM elements creation and removal. It makes use of Mutation Observers internally.",
   "main": "src/arrive.js",
   "directories": {
