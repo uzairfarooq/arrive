@@ -1,5 +1,5 @@
 {
-  "name": "arrive.js",
+  "name": "arrive",
   "version": "2.3.0",
   "description": "arrive.js provides events to watch for DOM elements creation and removal. It makes use of Mutation Observers internally.",
   "main": "src/arrive.js",
