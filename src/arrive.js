@@ -447,4 +447,4 @@ var Arrive = (function(window, $, undefined) {
 
   return Arrive;
 
-})(this, typeof jQuery === 'undefined' ? null : jQuery, undefined);
+})(window, typeof jQuery === 'undefined' ? null : jQuery, undefined);
