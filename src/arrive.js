@@ -343,7 +343,7 @@ var Arrive = (function(window, $, undefined) {
           return callback.call(existing[0].elem);
         }
 
-        utils.callCallbacks(existing)
+        setTimeout(utils.callCallbacks, 1, existing);
       }
 
       mutationBindEvent.call(this, selector, options, callback);
