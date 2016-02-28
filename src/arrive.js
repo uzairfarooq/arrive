@@ -1,10 +1,10 @@
 /*
  * arrive.js
- * v2.3.0
+ * v2.3.1
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
- * Copyright (c) 2014-2015 Uzair Farooq
+ * Copyright (c) 2014-2016 Uzair Farooq
  */
 
 var Arrive = (function(window, $, undefined) {
@@ -343,7 +343,7 @@ var Arrive = (function(window, $, undefined) {
           return callback.call(existing[0].elem);
         }
 
-        utils.callCallbacks(existing)
+        setTimeout(utils.callCallbacks, 1, existing);
       }
 
       mutationBindEvent.call(this, selector, options, callback);
@@ -447,4 +447,4 @@ var Arrive = (function(window, $, undefined) {
 
   return Arrive;
 
-})(this, typeof jQuery === 'undefined' ? null : jQuery, undefined);
+})(window, typeof jQuery === 'undefined' ? null : jQuery, undefined);
