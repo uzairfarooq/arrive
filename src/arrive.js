@@ -1,10 +1,10 @@
 /*
  * arrive.js
- * v2.3.0
+ * v2.3.1
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
- * Copyright (c) 2014-2015 Uzair Farooq
+ * Copyright (c) 2014-2016 Uzair Farooq
  */
 
 var Arrive = (function(window, $, undefined) {
