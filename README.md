@@ -122,7 +122,7 @@ arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/do
 If you want to report a bug or request a feature, use the [Issues](https://github.com/uzairfarooq/arrive/issues) section. Before creating a new issue, search the existing ones to make sure that you're not creating a duplicate. When reporting a bug, be sure to include OS/browser version and steps/code to reproduce the bug, a [JSFiddle](http://jsfiddle.net/) would be great.
 
 ####Development
-If you want ot contribute to arrive, here is the workflow you should use:
+If you want to contribute to arrive, here is the workflow you should use:
 
 1. Fork the repository.
 2. Clone the forked repository locally.
