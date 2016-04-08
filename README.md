@@ -1,5 +1,6 @@
 # arrive.js
 
+#**This fork supports es2015 arrow function as callback.**
 arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
 
 Download [arrive.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js) (latest)
