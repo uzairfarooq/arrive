@@ -12,7 +12,15 @@ describe("Arrive", function() {
 
         describe("Binding events to different element types:", function() {
             var selector = ".test-elem";
+            it("Make sure the `arguments[0]` equals `this`", function(done) {
+                var $appendedElem = $("<div class='test-elem'></div>");
 
+                j(window).arrive(selector, function(elem) {
+                    expect(this).toBe(elem);
+                    done();
+                });
+                $("body").append($appendedElem);
+            });
             it("event should be fired when 'arrive' event is binded to window", function(done) {
                 var $appendedElem = $("<div class='test-elem'></div>");
 

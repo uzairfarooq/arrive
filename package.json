@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "open ./tests/SpecRunner.html"
+    "test": "open ./tests/SpecRunner.html",
+    "minify": "node_modules/.bin/uglifyjs node_modules/.bin/uglifyjs --compress --source-map=minified/arrive.min.js.map --output=minified/arrive.min.js -- src/arrive.js"
   },
   "repository": {
     "type": "git",
@@ -30,5 +31,8 @@
   "bugs": {
     "url": "https://github.com/uzairfarooq/arrive/issues"
   },
-  "homepage": "https://github.com/uzairfarooq/arrive#readme"
+  "homepage": "https://github.com/uzairfarooq/arrive#readme",
+  "devDependencies": {
+    "uglify-js": "^2.6.2"
+  }
 }
