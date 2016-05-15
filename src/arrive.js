@@ -37,7 +37,7 @@ var Arrive = (function(window, $, undefined) {
       },
       callCallbacks: function(callbacksToBeCalled) {
         for (var i = 0, cb; cb = callbacksToBeCalled[i]; i++) {
-          cb.callback.call(cb.elem);
+          cb.callback.call(cb.elem, cb.elem);
         }
       },
       // traverse through all descendants of a node to check if event should be fired for any descendant
@@ -340,7 +340,7 @@ var Arrive = (function(window, $, undefined) {
 
         // no need to bind event if the callback has to be fired only once and we have already found the element
         if (options.onceOnly && existing.length) {
-          return callback.call(existing[0].elem);
+          return callback.call(existing[0].elem, existing[0].elem);
         }
 
         setTimeout(utils.callCallbacks, 1, existing);

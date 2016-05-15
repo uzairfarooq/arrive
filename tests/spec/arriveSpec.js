@@ -302,5 +302,26 @@ describe("Arrive", function() {
                 expect(true).toBeTruthy();
             });
         });
+
+        describe("ES2015 arrow function support", function() {
+            var selector = ".test-elem";
+            it("Make sure the first argument equals `this` object", function(done) {
+                var $appendedElem = $("<div class='test-elem'></div>");
+
+                j(document).arrive(selector, function(elem) {
+                    expect(this).toBe(elem);
+                    done();
+                });
+                $("body").append($appendedElem);
+            });
+            
+            it("Make sure the first argument equals `this` object with `options.onceOnly` and `options.existing`", function(done) {
+                j(document).arrive(selector, {onceOnly: true, existing: true}, function(elem) {
+                    expect(this).toBe(elem);
+                    done();
+                    $(selector).remove();
+                });
+            });
+        });
     });
 });
