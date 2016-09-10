@@ -284,7 +284,7 @@ var Arrive = (function(window, $, undefined) {
         }
         else if (mutation.type === "attributes") {
           if (nodeMatchFunc(targetNode, registrationData, callbacksToBeCalled)) {
-            callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
+            callbacksToBeCalled.push({ callback: registrationData.callback, elem: targetNode });
           }
         }
 
@@ -308,14 +308,17 @@ var Arrive = (function(window, $, undefined) {
                   registrationData.target, registrationData.selector, registrationData.callback);
             } else {
               // Ignore multiple mutations which may have been queued before the event was unbound.
-              return;
+              return false;
             }
           }
 
           registrationData.firedElems.push(node._id);
-          callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
+
+          return true;
         }
       }
+
+      return false;
     }
 
     arriveEvents = new MutationEvents(getArriveObserverConfig, onArriveMutation);
