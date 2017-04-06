@@ -20,7 +20,7 @@ $ npm install arrive --save
 
 ## Usage
 **The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
-###Watch for elements creation
+### Watch for elements creation
 Use `arrive` event to watch for elements creation:
 ```javascript
 // watch for creation of an element which satisfies the selector ".test-elem"
@@ -84,7 +84,7 @@ $(document).arrive(".test-elem", {fireOnAttributesModification: true}, function(
 });
 ```
 
-###Watch for elements removal
+### Watch for elements removal
 Use `leave` event to watch for elements removal.
 The first arugument to leave must not be a [descendent](https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors) or [child](https://developer.mozilla.org/en-US/docs/Web/CSS/Child_selectors) selector i.e. you cannot pass `.page .test-elem`, instead, pass `.test-elem`. It's because of a limitation in MutationObserver's api.
 
@@ -106,7 +106,7 @@ Arrive.unbindAllLeave();
 ```
 
 
-##Browser Support
+## Browser Support
 arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) which is introduced in DOM4. It's supported in latest versions of all popular browsers.
 
 | Browser           | Supported Versions
@@ -117,11 +117,11 @@ arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/do
 | Internet Explorer | 11.0+             |
 | Opera             | 14.0+             |
 
-##Contributing
-####Report a bug / Request a feature
+## Contributing
+#### Report a bug / Request a feature
 If you want to report a bug or request a feature, use the [Issues](https://github.com/uzairfarooq/arrive/issues) section. Before creating a new issue, search the existing ones to make sure that you're not creating a duplicate. When reporting a bug, be sure to include OS/browser version and steps/code to reproduce the bug, a [JSFiddle](http://jsfiddle.net/) would be great.
 
-####Development
+#### Development
 If you want to contribute to arrive, here is the workflow you should use:
 
 1. Fork the repository.
