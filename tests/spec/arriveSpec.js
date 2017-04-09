@@ -170,6 +170,16 @@ describe("Arrive", function() {
                     done();
                 }, 400);
             });
+
+          it("arrive event should not be fired when unbind is called from within arrive callback", function(done) {
+            j(document).unbindArrive(selector, callback);
+            $("body").append($("<div class='test-elem'></div>"));
+
+            setTimeout(function() {
+              expect(eventFired).not.toBeTruthy();
+              done();
+            }, 400);
+          });
         });
 
         describe("Multiple events tests.", function() {
@@ -302,26 +312,26 @@ describe("Arrive", function() {
                 expect(true).toBeTruthy();
             });
         });
+    });
 
-        describe("ES2015 arrow function support", function() {
-            var selector = ".test-elem";
-            it("Make sure the first argument equals `this` object", function(done) {
-                var $appendedElem = $("<div class='test-elem'></div>");
+    describe("ES2015 arrow function support", function() {
+        var selector = ".test-elem";
+        it("Make sure the first argument equals `this` object", function(done) {
+              var $appendedElem = $("<div class='test-elem'></div>");
 
-                j(document).arrive(selector, function(elem) {
-                    expect(this).toBe(elem);
-                    done();
-                });
-                $("body").append($appendedElem);
-            });
-            
-            it("Make sure the first argument equals `this` object with `options.onceOnly` and `options.existing`", function(done) {
-                j(document).arrive(selector, {onceOnly: true, existing: true}, function(elem) {
-                    expect(this).toBe(elem);
-                    done();
-                    $(selector).remove();
-                });
-            });
+              j(document).arrive(selector, function(elem) {
+                  expect(this).toBe(elem);
+                  done();
+              });
+              $("body").append($appendedElem);
+        });
+
+        it("Make sure the first argument equals `this` object with `options.onceOnly` and `options.existing`", function(done) {
+              j(document).arrive(selector, {onceOnly: true, existing: true}, function(elem) {
+                  expect(this).toBe(elem);
+                  done();
+                  $(selector).remove();
+              });
         });
     });
 });
