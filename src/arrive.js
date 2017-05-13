@@ -37,7 +37,7 @@ var Arrive = (function(window, $, undefined) {
       },
       callCallbacks: function(callbacksToBeCalled) {
         for (var i = 0, cb; cb = callbacksToBeCalled[i]; i++) {
-          cb.callback.call(cb.elem);
+          cb.callback.call(cb.elem, cb.elem);
         }
       },
       // traverse through all descendants of a node to check if event should be fired for any descendant
