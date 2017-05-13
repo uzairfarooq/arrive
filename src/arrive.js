@@ -37,7 +37,7 @@ var Arrive = (function(window, $, undefined) {
       },
       callCallbacks: function(callbacksToBeCalled) {
         for (var i = 0, cb; cb = callbacksToBeCalled[i]; i++) {
-          cb.callback.call(cb.elem);
+          cb.callback.call(cb.elem, cb.elem);
         }
       },
       // traverse through all descendants of a node to check if event should be fired for any descendant
@@ -145,8 +145,8 @@ var Arrive = (function(window, $, undefined) {
     eventsBucket.beforeAdding(function(registrationData) {
       var 
         target    = registrationData.target, 
-        selector  = registrationData.selector, 
-        callback  = registrationData.callback, 
+        //selector  = registrationData.selector, 
+        //callback  = registrationData.callback, 
         observer;
 
       // mutation observer does not work on window or document
@@ -242,8 +242,8 @@ var Arrive = (function(window, $, undefined) {
    * Processes 'arrive' events
    */
   var ArriveEvents = function() {
-    var mutationEvents,
-        me = this;
+    //var mutationEvents,
+    //    me = this;
 
     // Default options for 'arrive' event
     var arriveDefaultOptions = {
@@ -358,8 +358,8 @@ var Arrive = (function(window, $, undefined) {
    * Processes 'leave' events
    */
   var LeaveEvents = function() {
-    var mutationEvents,
-        me = this;
+    //var mutationEvents,
+    //    me = this;
 
     // Default options for 'leave' event
     var leaveDefaultOptions = {};
@@ -376,7 +376,7 @@ var Arrive = (function(window, $, undefined) {
     function onLeaveMutation(mutations, registrationData) {
       mutations.forEach(function( mutation ) {
         var removedNodes  = mutation.removedNodes,
-            targetNode   = mutation.target,
+            //targetNode   = mutation.target,
             callbacksToBeCalled = [];
 
         if( removedNodes !== null && removedNodes.length > 0 ) {
