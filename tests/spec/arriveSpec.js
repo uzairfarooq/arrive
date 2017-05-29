@@ -120,7 +120,7 @@ describe("Arrive", function() {
 
         describe("Event unbinding tests", function() {
             var eventFired, 
-                selector = ".test-elem";
+                selector = ".test-elem",
                 callback = function() {
                     eventFired = true;
                 };
@@ -171,15 +171,22 @@ describe("Arrive", function() {
                 }, 400);
             });
 
-          it("arrive event should not be fired when unbind is called from within arrive callback", function(done) {
-            j(document).unbindArrive(selector, callback);
-            $("body").append($("<div class='test-elem'></div>"));
+            it("arrive event should not be fired once unbind is called from within arrive callback", function(done) {
 
-            setTimeout(function() {
-              expect(eventFired).not.toBeTruthy();
-              done();
-            }, 400);
-          });
+                var callbackCount = 0;
+                j(document).arrive(".some-class", { existing: true }, function () {
+                    document.unbindArrive(".some-class");
+                    callbackCount++;
+                });
+
+                $("body").append($("<div class='some-class'></div>"));
+                $("body").append($("<div class='some-class'></div>"));
+
+                setTimeout(function() {
+                    expect(callbackCount).toBe(1);
+                    done();
+                }, 400);
+            });
         });
 
         describe("Multiple events tests.", function() {
@@ -202,7 +209,7 @@ describe("Arrive", function() {
                 $("body").append(appendedElem);
             });
 
-            it("onceOnly argument prevents multiple callbacks for a single registration", function(done) {
+            it("onceOnly argument should result in callback being called only once", function(done) {
                 var callCount = 0;
 
                 j(document).arrive(selector, {onceOnly: true}, function() {

@@ -40,9 +40,22 @@ var Arrive = (function(window, $, undefined) {
           }
         };
       },
-      callCallbacks: function(callbacksToBeCalled) {
+      callCallbacks: function(callbacksToBeCalled, registrationData) {
+        if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length == 1) {
+          // as onlyOnce param is true, make sure we fire the event for only one item
+          callbacksToBeCalled = [callbacksToBeCalled[0]];
+        }
+
         for (var i = 0, cb; (cb = callbacksToBeCalled[i]); i++) {
-          cb.callback.call(cb.elem, cb.elem);
+          if (cb && cb.callback) {
+            cb.callback.call(cb.elem, cb.elem);
+          }
+        }
+
+        if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length == 1) {
+          // unbind event after first callback as onceOnly is true.
+          registrationData.me.unbindEventWithSelectorAndCallback.call(
+            registrationData.target, registrationData.selector, registrationData.callback);
         }
       },
       // traverse through all descendants of a node to check if event should be fired for any descendant
@@ -121,7 +134,12 @@ var Arrive = (function(window, $, undefined) {
           if (this._beforeRemoving) {
               this._beforeRemoving(registeredEvent);
           }
-          this._eventsBucket.splice(i, 1);
+
+          // mark callback as null so that even if an event mutation was already triggered it does not call callback
+          var removedEvents = this._eventsBucket.splice(i, 1);
+          if (removedEvents && removedEvents.length) {
+            removedEvents[0].callback = null;
+          }
         }
       }
     };
@@ -288,7 +306,7 @@ var Arrive = (function(window, $, undefined) {
           }
         }
 
-        utils.callCallbacks(callbacksToBeCalled);
+        utils.callCallbacks(callbacksToBeCalled, registrationData);
       });
     }
 
@@ -300,18 +318,6 @@ var Arrive = (function(window, $, undefined) {
         }
         // make sure the arrive event is not already fired for the element
         if (registrationData.firedElems.indexOf(node._id) == -1) {
-
-          if (registrationData.options.onceOnly) {
-            if (registrationData.firedElems.length === 0) {
-              // On first callback, unbind event.
-              registrationData.me.unbindEventWithSelectorAndCallback.call(
-                  registrationData.target, registrationData.selector, registrationData.callback);
-            } else {
-              // Ignore multiple mutations which may have been queued before the event was unbound.
-              return false;
-            }
-          }
-
           registrationData.firedElems.push(node._id);
 
           return true;
@@ -388,7 +394,7 @@ var Arrive = (function(window, $, undefined) {
           utils.checkChildNodesRecursively(removedNodes, registrationData, nodeMatchFunc, callbacksToBeCalled);
         }
 
-        utils.callCallbacks(callbacksToBeCalled);
+        utils.callCallbacks(callbacksToBeCalled, registrationData);
       });
     }
 
