@@ -35,7 +35,7 @@ $(".container-1").arrive(".test-elem", function() {
     var $newElem = $(this);
 });
 
-// as of v2.3.2, new element is also passed as argument to callback function.
+// as of v2.3.2, new element is also passed as argument to the callback function.
 // This is to support arrow functions as 'this' is not bindable in arrow functions.
 $(document).arrive(".test-elem", function(newElem) {
     var $newElem = $(newElem);
