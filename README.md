@@ -34,6 +34,12 @@ $(document).arrive(".test-elem", function() {
 $(".container-1").arrive(".test-elem", function() {
     var $newElem = $(this);
 });
+
+// as of v2.3.2, new element is also passed as argument to callback function.
+// This is to support arrow functions as 'this' is not bindable in arrow functions.
+$(document).arrive(".test-elem", function(newElem) {
+    var $newElem = $(newElem);
+});
 ```
 
 In pure javascript you can call the function on `document`, `window`, any `HTMLElement` or `NodeList`, like this:
