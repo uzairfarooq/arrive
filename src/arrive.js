@@ -66,8 +66,11 @@ var Arrive = (function(window, $, undefined) {
             callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
           }
 
-          if (node.childNodes.length > 0) {
-            utils.checkChildNodesRecursively(node.childNodes, registrationData, matchFunc, callbacksToBeCalled);
+          var matchedDescendents = node.querySelectorAll(registrationData.selector);
+          for (var j=0, descendent; (descendent = matchedDescendents[j]); j++) {
+            if (matchFunc(descendent, registrationData, callbacksToBeCalled)) {
+              callbacksToBeCalled.push({ callback: registrationData.callback, elem: descendent });
+            }
           }
         }
       },
