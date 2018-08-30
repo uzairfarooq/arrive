@@ -66,6 +66,7 @@ var Arrive = (function(window, $, undefined) {
             callbacksToBeCalled.push({ callback: registrationData.callback, elem: node });
           }
 
+          if( !node.querySelectorAll ) continue;
           var matchedDescendents = node.querySelectorAll(registrationData.selector);
           for (var j=0, descendent; (descendent = matchedDescendents[j]); j++) {
             if (matchFunc(descendent, registrationData, callbacksToBeCalled)) {
