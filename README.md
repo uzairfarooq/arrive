@@ -51,7 +51,7 @@ document.arrive(".test-elem", function() {
 });
 
 // this will attach arrive event to all elements in the NodeList
-document.getElementsByClass(".container-1").arrive(".test-elem", function() {
+document.getElementsByClassName(".container-1").arrive(".test-elem", function() {
     // 'this' refers to the newly created element
 });
 ```
