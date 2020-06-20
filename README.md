@@ -148,4 +148,5 @@ If you want to contribute to arrive, here is the workflow you should use:
 - [#60](https://github.com/uzairfarooq/arrive/issues/60): Issue when expose arrive API to window
 
 **Keywords**
+
 javascript, js, jquery, node.js, watch, listen, creation, dynamically, removal, new, elements, DOM, dynamic, detect, insertions, event, bind, live, livequery
