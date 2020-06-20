@@ -141,7 +141,11 @@ If you want to contribute to arrive, here is the workflow you should use:
 8. Submit a pull request from your repo back to the original repository.
 9. Once it is accepted, remember to pull those changes back into your develop branch!
 
+#### Some features/bugs you can send pull requests for
+- [#70](https://github.com/uzairfarooq/arrive/issues/70): Add Typescript types to the project
+- [#69](https://github.com/uzairfarooq/arrive/issues/69): Option to watch for text change
+- [#64](https://github.com/uzairfarooq/arrive/issues/64): Function firing twice in Firefox 56 on 2.4.1 (regression from bug 54)
+- [#60](https://github.com/uzairfarooq/arrive/issues/60): Issue when expose arrive API to window
 
 **Keywords**
-
 javascript, js, jquery, node.js, watch, listen, creation, dynamically, removal, new, elements, DOM, dynamic, detect, insertions, event, bind, live, livequery
