@@ -259,6 +259,30 @@ describe("Arrive", function() {
                 });
             });
         });
+        
+        describe("Async/await and promise support:", function() {
+            var selector = ".test-elem";
+            
+            beforeEach(function() {
+                $(selector).remove();
+            });
+            
+            it("should return the appended element", async function(done) {
+                var $elemToAppend = $("<div class='test-elem'></div>");
+                setTimeout(() => {$("body").append($elemToAppend);}, 250);
+                var arrivedElem = await j(document).arrive(selector);
+                expect(arrivedElem).toBe($elemToAppend[0]);
+                done();
+            });
+            
+            it("should return the existing element", async function(done) {
+                var $existingElement = $("<div class='test-elem'></div>")[0];
+                $("body").append($existingElement);
+                var arrivedElem = await j(document).arrive(selector, {existing: true});
+                expect(arrivedElem).toBe($existingElement);
+                done();
+            });
+        });
     });
 
     describe("Leave Event Tests", function() {
@@ -317,6 +341,24 @@ describe("Arrive", function() {
             it("arrive function should be callable on HTMLElement", function() {
                 document.getElementsByTagName("body")[0].arrive(".test", function() {});
                 expect(true).toBeTruthy();
+            });
+        });
+        
+        describe("Async/await and promise support:", function() {
+            var selector = ".test-elem";
+            
+            beforeEach(function() {
+                $(selector).remove();
+                var $elemToBeRemoved = $("<div class='test-elem'></div>");
+                $("body").append($elemToBeRemoved);
+            });
+            
+            it("should finish once the existing element is removed", async function(done) {
+                var $elemThatWillBeRemoved = $(selector)[0];
+                setTimeout(() => {$(selector).remove();}, 250);
+                var $removedEle = await j(document).leave(selector);
+                expect($removedEle).toBe($elemThatWillBeRemoved);
+                done();
             });
         });
     });

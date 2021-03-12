@@ -111,6 +111,21 @@ $(document).unbindLeave();
 Arrive.unbindAllLeave();
 ```
 
+### Async/Await and Promise Support
+`Warning:` You can only listen for `one` event at a time this way. If you need to handle events continually, then use a callback instead.
+
+Example with Async/Await:
+```javascript
+var $newElem = await arrive(".test-elem");
+// do stuff with the element
+```
+
+Example with Promise.then:
+```javascript
+arrive(".test-elem").then($newElem => {
+    // do stuff with the element
+});
+```
 
 ## Browser Support
 arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) which is introduced in DOM4. It's supported in latest versions of all popular browsers.
