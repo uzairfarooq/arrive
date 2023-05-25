@@ -20,55 +20,41 @@ $ npm install arrive --save
 ```
 
 ## Usage
-**The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
 ### Watch for elements creation
 Use `arrive` event to watch for elements creation:
 ```javascript
 // watch for creation of an element which satisfies the selector ".test-elem"
-$(document).arrive(".test-elem", function() {
-    // 'this' refers to the newly created element
-    var $newElem = $(this);
+document.arrive(".test-elem", function(newElem) {
+    // newElem refers to the newly created element
 });
 
 // the above event would watch for creation of element in whole document
 // it's better to be more specific whenever possible, for example
-$(".container-1").arrive(".test-elem", function() {
-    var $newElem = $(this);
+document.querySelector(".container-1").arrive(".test-elem", function(newElem) {
 });
 
-// as of v2.3.2, new element is also passed as argument to the callback function.
-// This is to support arrow functions as 'this' is not bindable in arrow functions.
-$(document).arrive(".test-elem", function(newElem) {
-    var $newElem = $(newElem);
-});
-```
-
-In pure javascript you can call the function on `document`, `window`, any `HTMLElement` or `NodeList`, like this:
-```javascript
-// watch for element creation in the whole HTML document
-document.arrive(".test-elem", function() {
-    // 'this' refers to the newly created element
-});
-
-// this will attach arrive event to all elements in the NodeList
-document.getElementsByClassName(".container-1").arrive(".test-elem", function() {
-    // 'this' refers to the newly created element
+// you can bind event to multiple elements at once
+// this will bind arrive event to all the elements returned by document.querySelectorAll()
+document.querySelectorAll(".box").arrive(".test-elem", function(newElem) {
 });
 ```
 
 Make sure to remove listeners when they are no longer needed, it's better for performance:
 ```javascript
 // unbind all arrive events on document element
-$(document).unbindArrive();
+document.unbindArrive();
+
+// unbind all arrive events on a specific element
+document.querySelector(".box").unbindArrive();
 
 // unbind all arrive events on document element which are watching for ".test-elem" selector
-$(document).unbindArrive(".test-elem");
+document.unbindArrive(".test-elem");
 
 // unbind only a specific callback
-$(document).unbindArrive(callbackFunc);
+document.unbindArrive(callbackFunc);
 
 // unbind only a specific callback on ".test-elem" selector
-$(document).unbindArrive(".test-elem", callbackFunc);
+document.unbindArrive(".test-elem", callbackFunc);
 
 // unbind all arrive events
 Arrive.unbindAllArrive();
@@ -85,9 +71,8 @@ var options = {
 ```
 Example:
 ```javascript
-$(document).arrive(".test-elem", {fireOnAttributesModification: true}, function() {
-    // 'this' refers to the newly created element
-    var $newElem = $(this);
+document.arrive(".test-elem", {fireOnAttributesModification: true}, function(newElem) {
+    // 'newElem' refers to the newly created element
 });
 ```
 
@@ -97,8 +82,8 @@ The first arugument to leave must not be a [descendent](https://developer.mozill
 
 ```javascript
 // watch for removal of an element which satisfies the selector ".test-elem"
-$(".container-1").leave(".test-elem", function() {
-    var $removedElem = $(this);
+document.querySelector(".container-1").leave(".test-elem", function(removedElem) {
+    // 'removedElem' refers to the newly removed element
 });
 ```
 
@@ -106,12 +91,26 @@ You can unbind the `leave` event in the same way as `arrive` event, using `unbin
 
 ```javascript
 // unbind all leave events on document element
-$(document).unbindLeave();
+document.unbindLeave();
 
 // unbind all leave events
 Arrive.unbindAllLeave();
 ```
 
+
+## jQuery Support
+If you use jQuery, you can call all arrive functions on jQuery elements as well:
+```javascript
+// watch for element creation in the whole HTML document
+$(document).arrive(".test-elem", function(newElem) {
+  // Note: newElem is a javascript element not a jQuery element
+});
+
+// this will attach arrive event to all elements returned by $(".container-1")
+$(".container-1").arrive(".test-elem", function(newElem) {
+  // Note: newElem is a javascript element not a jQuery element
+});
+```
 
 ## Browser Support
 arrive.js is built over [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) which is introduced in DOM4. It's supported in latest versions of all popular browsers.
