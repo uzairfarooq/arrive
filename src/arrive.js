@@ -336,17 +336,16 @@ var Arrive = (function(window, $, undefined) {
     var mutationBindEvent = arriveEvents.bindEvent;
 
     // override bindEvent function
-    arriveEvents.bindEvent = function(selector, options, callback) {
+    arriveEvents.bindEvent = function(selector, arg2, arg3) {
 
-      if (typeof callback === "undefined") {
-        callback = options;
-        options = arriveDefaultOptions;
-      } else {
-        options = utils.mergeArrays(arriveDefaultOptions, options);
-      }
-
+      var options = (typeof arg2 === 'object') ? utils.mergeArrays(arriveDefaultOptions, arg2) : arriveDefaultOptions;
+      var callback = (typeof arg3 === 'function') ? arg3 : (typeof arg2 === 'function') ? arg2 : undefined;
       var elements = utils.toElementsArray(this);
 
+      // For promise and async support, we can only do onceOnly=true
+      if (!callback)
+        options.onceOnly = true;
+      
       if (options.existing) {
         var existing = [];
 
@@ -359,13 +358,22 @@ var Arrive = (function(window, $, undefined) {
 
         // no need to bind event if the callback has to be fired only once and we have already found the element
         if (options.onceOnly && existing.length) {
-          return callback.call(existing[0].elem, existing[0].elem);
+          if (callback) {
+            return callback.call(existing[0].elem, existing[0].elem);
+          } else {
+            return Promise.resolve(existing[0].elem);
+          }
         }
 
         setTimeout(utils.callCallbacks, 1, existing);
       }
 
-      mutationBindEvent.call(this, selector, options, callback);
+      if (callback) {
+        mutationBindEvent.call(this, selector, options, callback);
+      } else {
+        var a = this;
+        return new Promise(resolve => mutationBindEvent.call(a, selector, options, resolve));
+      }
     };
 
     return arriveEvents;
@@ -411,16 +419,17 @@ var Arrive = (function(window, $, undefined) {
     var mutationBindEvent = leaveEvents.bindEvent;
 
     // override bindEvent function
-    leaveEvents.bindEvent = function(selector, options, callback) {
+    leaveEvents.bindEvent = function(selector, arg2, arg3) {
 
-      if (typeof callback === "undefined") {
-        callback = options;
-        options = leaveDefaultOptions;
+      var options = (typeof arg2 === 'object') ? utils.mergeArrays(leaveDefaultOptions, arg2) : leaveDefaultOptions;
+      var callback = (typeof arg3 === 'function') ? arg3 : (typeof arg2 === 'function') ? arg2 : undefined;
+
+      if (callback) {
+        mutationBindEvent.call(this, selector, options, callback);
       } else {
-        options = utils.mergeArrays(leaveDefaultOptions, options);
+        var a = this;
+        return new Promise(resolve => mutationBindEvent.call(a, selector, options, resolve));
       }
-
-      mutationBindEvent.call(this, selector, options, callback);
     };
 
     return leaveEvents;
