@@ -40,7 +40,7 @@ var Arrive = (function(window, $, undefined) {
           }
         };
       },
-      callCallbacks: function(callbacksToBeCalled, registrationData) {
+      callCallbacks: function(callbacksToBeCalled, registrationData, mutationEvents) {
         if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length == 1) {
           // as onlyOnce param is true, make sure we fire the event for only one item
           callbacksToBeCalled = [callbacksToBeCalled[0]];
@@ -50,6 +50,10 @@ var Arrive = (function(window, $, undefined) {
           if (cb && cb.callback) {
             cb.callback.call(cb.elem, cb.elem);
           }
+        }
+
+        if (registrationData && mutationEvents) {
+          mutationEvents.addTimeoutHandler(registrationData.target, registrationData.selector, registrationData.callback, registrationData.options, registrationData.data);
         }
 
         if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length == 1) {
@@ -111,12 +115,13 @@ var Arrive = (function(window, $, undefined) {
       this._beforeRemoving  = null;
     };
 
-    EventsBucket.prototype.addEvent = function(target, selector, options, callback) {
+    EventsBucket.prototype.addEvent = function(target, selector, options, callback, data) {
       var newEvent = {
         target:             target,
         selector:           selector,
         options:            options,
         callback:           callback,
+        data:               data,
         firedElems:         []
       };
 
@@ -133,6 +138,10 @@ var Arrive = (function(window, $, undefined) {
         if (compareFunction(registeredEvent)) {
           if (this._beforeRemoving) {
               this._beforeRemoving(registeredEvent);
+          }
+
+          if (registeredEvent.data && registeredEvent.data.timeoutId) {
+            clearTimeout(registeredEvent.data.timeoutId);
           }
 
           // mark callback as null so that even if an event mutation was already triggered it does not call callback
@@ -203,7 +212,12 @@ var Arrive = (function(window, $, undefined) {
       var elements = utils.toElementsArray(this);
 
       for (var i = 0; i < elements.length; i++) {
-        eventsBucket.addEvent(elements[i], selector, options, callback);
+        const data = {};
+
+      // Add timeout handling
+        me.addTimeoutHandler(elements[i], selector, callback, options, data);
+
+        eventsBucket.addEvent(elements[i], selector, options, callback, data);
       }
     };
 
@@ -259,6 +273,21 @@ var Arrive = (function(window, $, undefined) {
       });
     };
 
+    this.addTimeoutHandler = function(target, selector, callback, options, data) {
+      if (!options.timeout || options.timeout <= 0) {
+        return;
+      }
+    
+      if (data.timeoutId) {
+        clearTimeout(data.timeoutId);
+      }
+    
+      data.timeoutId = setTimeout(() => {
+        me.unbindEventWithSelectorAndCallback.call(target, selector, callback);
+        callback.call(null, null);
+      }, options.timeout);
+    }
+
     return this;
   };
 
@@ -272,7 +301,8 @@ var Arrive = (function(window, $, undefined) {
     var arriveDefaultOptions = {
       fireOnAttributesModification: false,
       onceOnly: false,
-      existing: false
+      existing: false,
+      timeout: 0  // default 0 (no timeout)
     };
 
     function getArriveObserverConfig(options) {
@@ -306,7 +336,7 @@ var Arrive = (function(window, $, undefined) {
           }
         }
 
-        utils.callCallbacks(callbacksToBeCalled, registrationData);
+        utils.callCallbacks(callbacksToBeCalled, registrationData, arriveEvents);
       });
     }
 
@@ -394,7 +424,7 @@ var Arrive = (function(window, $, undefined) {
           utils.checkChildNodesRecursively(removedNodes, registrationData, nodeMatchFunc, callbacksToBeCalled);
         }
 
-        utils.callCallbacks(callbacksToBeCalled, registrationData);
+        utils.callCallbacks(callbacksToBeCalled, registrationData, leaveEvents);
       });
     }
 
@@ -421,6 +451,7 @@ var Arrive = (function(window, $, undefined) {
 
     return leaveEvents;
   };
+
 
 
   var arriveEvents = new ArriveEvents(),

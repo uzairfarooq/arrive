@@ -1,4 +1,4 @@
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
 
 describe("Arrive", function() {
 
@@ -227,6 +227,102 @@ describe("Arrive", function() {
             });
         });
 
+        describe("options.timeout", function() {
+            // Add beforeEach to clean up
+            beforeEach(function() {
+                $(".test-timeout-1, .test-timeout-2, .test-timeout-3, .test-timeout-4").remove();
+            });
+
+            afterEach(function() {
+                // Clean up any remaining event listeners
+                Arrive.unbindAllArrive();
+            });
+
+            it("should call callback with null when element is not found within timeout", function(done) {
+                var selector = ".test-timeout-1";
+                j(document).arrive(selector, { timeout: 200 }, function(elem) {
+                    expect(elem).toBe(null);
+                    done();
+                });
+            });
+
+            it("should call callback with element when found before timeout", function(done) {
+                var selector = ".test-timeout-2";
+                var $appendedElem = $("<div class='test-timeout-2'></div>");
+
+                j(document).arrive(selector, { timeout: 200 }, function(elem) {
+                    expect(elem).toBe($appendedElem[0]);
+                    done();
+                });
+
+                setTimeout(function() {
+                    $("body").append($appendedElem);
+                }, 100);
+            });
+
+            it("should call callback after timeout when onceOnly is true", function(done) {
+                var selector = ".test-timeout-3";
+
+                j(document).arrive(selector, { timeout: 200, onceOnly: true }, function(elem) {
+                    expect(elem).toBe(null);
+                    setTimeout(done, 200);
+                });
+
+                setTimeout(function() {
+                    $("body").append($("<div class='test-timeout-3'></div>"));
+                }, 300);
+            });
+
+            it("should not call callback if arrive has been unbinded", function(done) {
+                var selector = ".test-timeout-4";
+                var callCount = 0;
+                var $elem = $("<div class='test-timeout-4'></div>");
+
+                // Set up arrive handler
+                j(document).arrive(selector, { timeout: 200 }, function(elem) {
+                    callCount++;
+                });
+
+                // Unbind arrive before timeout
+                setTimeout(function() {
+                    Arrive.unbindAllArrive();
+                    $("body").append($elem);
+                }, 100);
+
+                // Check after timeout that callback was not called
+                setTimeout(function() {
+                    expect(callCount).toBe(0);
+                    done(); 
+                }, 300);
+            });
+
+            it("should restart timeout when element is found and onceOnly is false", function(done) {
+                var selector = ".test-timeout-4";
+                var callCount = 0;
+                var $firstElem = $("<div class='test-timeout-4'></div>");
+                
+                j(document).arrive(selector, { timeout: 300, onceOnly: false }, function(elem) {
+                    callCount++;
+                });
+
+                // Add first element after 100ms
+                setTimeout(function() {
+                    $("body").append($firstElem);
+                }, 100);
+
+                // Check after 350ms (after timeout)
+                setTimeout(function() {
+                    expect(callCount).toBe(1);
+                }, 350);
+
+                // Check after 500ms (after timeout)
+                setTimeout(function() {
+                    expect(callCount).toBe(2);
+                    done();
+                }, 500);
+            });
+        });
+
         describe("options.existing", function() {
             var selector = ".test-existing";
 
@@ -317,6 +413,42 @@ describe("Arrive", function() {
             it("arrive function should be callable on HTMLElement", function() {
                 document.getElementsByTagName("body")[0].arrive(".test", function() {});
                 expect(true).toBeTruthy();
+            });
+        });
+
+        describe("options.timeout", function() {
+            beforeEach(function() {
+                $(".test-timeout-leave-1, .test-timeout-leave-2").remove();
+            });
+
+            afterEach(function() {
+                Arrive.unbindAllLeave();
+            });
+
+            it("should call callback with null when element is not removed within timeout", function(done) {
+                var selector = ".test-timeout-leave-1";
+                var $elem = $("<div class='test-timeout-leave-1'></div>");
+                $("body").append($elem);
+
+                j(document).leave(selector, { timeout: 200 }, function(elem) {
+                    expect(elem).toBe(null);
+                    done();
+                });
+            });
+
+            it("should call callback with element when removed before timeout", function(done) {
+                var selector = ".test-timeout-leave-2";
+                var $elem = $("<div class='test-timeout-leave-2'></div>");
+                $("body").append($elem);
+
+                j(document).leave(selector, { timeout: 200 }, function(elem) {
+                    expect(elem).toBe($elem[0]);
+                    done();
+                });
+
+                setTimeout(function() {
+                    $elem.remove();
+                }, 100);
             });
         });
     });
