@@ -72,7 +72,7 @@ var options = {
 ```
 Example:
 ```javascript
-document.arrive(".test-elem", {fireOnAttributesModification: true}, function(newElem) {
+document.arrive(".test-elem", { fireOnAttributesModification: true}, function(newElem) {
     // 'newElem' refers to the newly created element
 });
 ```

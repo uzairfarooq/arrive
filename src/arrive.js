@@ -404,7 +404,9 @@ var Arrive = (function(window, $, undefined) {
    */
   var LeaveEvents = function() {
     // Default options for 'leave' event
-    var leaveDefaultOptions = {};
+    var leaveDefaultOptions = {
+      timeout: 0  // default 0 (no timeout)
+    };
 
     function getLeaveObserverConfig() {
       var config = {
