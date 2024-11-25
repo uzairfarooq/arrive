@@ -52,7 +52,7 @@ var Arrive = (function(window, $, undefined) {
           }
         }
 
-        if (registrationData && mutationEvents) {
+        if (registrationData && registrationData.callback && mutationEvents) {
           mutationEvents.addTimeoutHandler(registrationData.target, registrationData.selector, registrationData.callback, registrationData.options, registrationData.data);
         }
 
