@@ -1,45 +1,34 @@
 # arrive.js
 [![CDNJS version](https://img.shields.io/cdnjs/v/arrive.svg)](https://cdnjs.com/libraries/arrive)
 
-arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
+A lightweight JS library for watching DOM element creation and removal using [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver).
 
-Download [arrive.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js) (latest)
+## Key Features
+- Watch for element creation and removal in the DOM
+- Zero dependencies
+- Lightweight implementation
+- Flexible configuration options
 
-or use [Bower](http://bower.io/) to install:
-
-```bash
-# install arrive.js and add it to bower.json dependencies
-$ bower install arrive --save
-```
-
-##### Node.js / NPM
-Node.js users can install using npm:
+## Installation
 
 ```bash
-$ npm install arrive --save
+npm install arrive --save   # Using NPM
+bower install arrive --save # Using Bower
 ```
-
-## Features
-- **DOM Element Creation Detection**: Watch for new elements being added to the DOM
-- **DOM Element Removal Detection**: Monitor when elements are removed from the DOM
-- **Attribute Modification Support**: Optional detection of elements that match selectors after attribute changes
-- **Flexible Options**: Customize behavior with options like `onceOnly`, `existing`, and `timeout`
-- **No Dependencies**: Standalone library with zero dependencies
-- **Modern Browser Support**: Uses MutationObserver API for efficient DOM monitoring
-- **Small Footprint**: Lightweight implementation for minimal performance impact
+Or [download arrive.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js) directly.
 
 ## Usage
-### Watch for elements creation
-Use `arrive` event to watch for elements creation:
+
+### Watch for New Elements
 ```javascript
-// watch for creation of an element which satisfies the selector ".test-elem"
+// Basic usage
 document.arrive(".test-elem", function(newElem) {
-    // newElem refers to the newly created element
+    // newElem is the newly created element
 });
 
-// the above event would watch for creation of element in whole document
-// it's better to be more specific whenever possible, for example
-document.querySelector(".container-1").arrive(".test-elem", function(newElem) {
+// Watch within a specific container (recommended for better performance)
+document.querySelector(".container").arrive(".test-elem", function(newElem) {
+    // More specific watching
 });
 
 // you can bind event to multiple elements at once
@@ -48,7 +37,60 @@ document.querySelectorAll(".box").arrive(".test-elem", function(newElem) {
 });
 ```
 
-Make sure to remove listeners when they are no longer needed, it's better for performance:
+#### Options
+The `arrive` event accepts an optional configuration object:
+
+```javascript
+{
+    // Watch for changes to existing elements' attributes
+    fireOnAttributesModification: false,    
+
+    // Fire callback only once, then auto-unbind
+    onceOnly: false,                        
+
+    // Fire callback for elements that already exist in the DOM
+    existing: false,                        
+
+    // Call callback with null after specified milliseconds and Auto-unbind  (0 = disabled)
+    timeout: 0                              
+}
+```
+
+Example:
+```javascript
+document.arrive(".test-elem", {
+    fireOnAttributesModification: true,  // Watch for attribute changes
+    existing: true,                      // Include existing elements
+    onceOnly: true,                      // Fire callback only once
+    timeout: 5000                        // Auto-unbind after 5 seconds call callback with null
+}, (newElem) => {
+    console.log(newElem);
+});
+```
+
+### Watch for Elements Removal
+Use the `leave` event to detect when elements are removed from the DOM.
+
+> **Important:** Due to MutationObserver API limitations, the selector must be direct (e.g., `.test-elem`) and cannot use descendant or child combinators (e.g., `.page .test-elem` is not allowed).
+
+```javascript
+// Watch for element removal
+document.querySelector(".container-1").leave(".test-elem", function(removedElem) {
+    // removedElem is the element that was just removed
+});
+
+// With options
+document.querySelector(".container-1").leave(".test-elem", {
+    onceOnly: true,    // Fire once per element
+    timeout: 5000      // Auto-unbind after 5 seconds
+}, function(removedElem) {
+    // removedElem is the element that was just removed
+});
+```
+
+### Unbinding Event Listeners
+For better performance, make sure to remove listeners when they are no longer needed:
+
 ```javascript
 // unbind all arrive events on document element
 document.unbindArrive();
@@ -65,48 +107,15 @@ document.unbindArrive(callbackFunc);
 // unbind only a specific callback on ".test-elem" selector
 document.unbindArrive(".test-elem", callbackFunc);
 
-// unbind all arrive events
+// unbind all arrive events (registered on any element)
 Arrive.unbindAllArrive();
-```
 
-#### Options
-As of v2.0 `arrive` event accepts an optional `options` object as 2nd argument. Options object consists of following:
-```javascript
-var options = {
-    fireOnAttributesModification: boolean, // Defaults to false. Setting it to true would make arrive event fire on existing elements which start to satisfy selector after some modification in DOM attributes (an arrive event won't fire twice for a single element even if the option is true). If false, it'd only fire for newly created elements.
-    onceOnly: boolean,                     // Defaults to false. Setting it to true would ensure that registered callbacks fire only once. No need to unbind the event if the attribute is set to true, it'll automatically unbind after firing once.
-    existing: boolean,                     // Defaults to false. Setting it to true would ensure that the registered callback is fired for the elements that already exist in the DOM and match the selector. If options.onceOnly is set, the callback is only called once with the first element matching the selector.
-    timeout: number                        // Defaults to 0 (no timeout). Setting a positive number will call the callback with null after the specified number of milliseconds. Event is automatically unbinded when timeout is reached.
-};
-```
-Example:
-```javascript
-document.arrive(".test-elem", { fireOnAttributesModification: true}, function(newElem) {
-    // 'newElem' refers to the newly created element
-});
-```
-
-### Watch for elements removal
-Use `leave` event to watch for elements removal.
-The first arugument to leave must not be a [descendent](https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors) or [child](https://developer.mozilla.org/en-US/docs/Web/CSS/Child_selectors) selector i.e. you cannot pass `.page .test-elem`, instead, pass `.test-elem`. It's because of a limitation in MutationObserver's api.
-
-```javascript
-// watch for removal of an element which satisfies the selector ".test-elem"
-document.querySelector(".container-1").leave(".test-elem", function(removedElem) {
-    // 'removedElem' refers to the newly removed element
-});
-```
-
-You can unbind the `leave` event in the same way as `arrive` event, using `unbindLeave` function i.e:
-
-```javascript
-// unbind all leave events on document element
+// Unbind all leave events on document element
 document.unbindLeave();
 
-// unbind all leave events
+// Unbind all leave events (registered on any element)
 Arrive.unbindAllLeave();
 ```
-
 
 ## jQuery Support
 If you use jQuery, you can call all arrive functions on jQuery elements as well:
@@ -153,8 +162,6 @@ If you want to contribute to arrive, here is the workflow you should use:
 #### Some features/bugs you can send pull requests for
 - [#70](https://github.com/uzairfarooq/arrive/issues/70): Add Typescript types to the project
 - [#69](https://github.com/uzairfarooq/arrive/issues/69): Option to watch for text change
-- [#64](https://github.com/uzairfarooq/arrive/issues/64): Function firing twice in Firefox 56 on 2.4.1 (regression from bug 54)
-- [#60](https://github.com/uzairfarooq/arrive/issues/60): Issue when expose arrive API to window
 
 **Keywords**
 
