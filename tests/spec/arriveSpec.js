@@ -321,6 +321,27 @@ describe("Arrive", function() {
                     done();
                 }, 500);
             });
+
+            it("should automatically unbind arrive event after timeout", function(done) {
+                var selector = ".test-timeout-5";
+                var callCount = 0;
+                
+                j(document).arrive(selector, { timeout: 200 }, function(elem) {
+                    callCount++;
+                });
+
+                // Wait for timeout to pass
+                setTimeout(function() {
+                    // Add element after timeout
+                    $("body").append($("<div class='test-timeout-5'></div>"));
+                    
+                    // Check after a delay that callback wasn't called
+                    setTimeout(function() {
+                        expect(callCount).toBe(1); // Should only be called once with null
+                        done();
+                    }, 200);
+                }, 300);
+            });
         });
 
         describe("options.existing", function() {
