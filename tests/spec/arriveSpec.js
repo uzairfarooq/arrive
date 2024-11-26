@@ -472,6 +472,48 @@ describe("Arrive", function() {
                 }, 100);
             });
         });
+
+        describe("Multiple leave events tests", function() {
+            var selector = ".test-leave-multiple";
+
+            beforeEach(function() {
+                Arrive.unbindAllLeave();
+                $(selector).remove();
+            });
+
+            it("Callback should be called multiple times when multiple elements are removed", function(done) {
+                var callCount = 0;
+                var $elements = $("<div class='test-leave-multiple'></div><div class='test-leave-multiple'></div>");
+                $("body").append($elements);
+
+                j(document).leave(selector, function() {
+                    callCount += 1;
+                    if (callCount >= 2) {
+                        expect(callCount).toBe(2);
+                        done();
+                    }
+                });
+
+                $(selector).remove();
+            });
+
+            it("onceOnly option should result in callback being called only once", function(done) {
+                var callCount = 0;
+                var $elements = $("<div class='test-leave-multiple'></div><div class='test-leave-multiple'></div>");
+                $("body").append($elements);
+
+                j(document).leave(selector, { onceOnly: true }, function() {
+                    callCount += 1;
+                });
+
+                $(selector).remove();
+
+                setTimeout(function() {
+                    expect(callCount).toBe(1);
+                    done();
+                }, 400);
+            });
+        });
     });
 
     describe("ES2015 arrow function support", function() {

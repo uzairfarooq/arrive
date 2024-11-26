@@ -41,9 +41,14 @@ var Arrive = (function(window, $, undefined) {
         };
       },
       callCallbacks: function(callbacksToBeCalled, registrationData, mutationEvents) {
-        if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length == 1) {
+        // firedElems check because firedElems are not added in case of leave events
+        if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length <= 1) {
           // as onlyOnce param is true, make sure we fire the event for only one item
           callbacksToBeCalled = [callbacksToBeCalled[0]];
+
+          // unbind event after first callback as onceOnly is true.
+          registrationData.me.unbindEventWithSelectorAndCallback.call(
+            registrationData.target, registrationData.selector, registrationData.callback);
         }
 
         for (var i = 0, cb; (cb = callbacksToBeCalled[i]); i++) {
@@ -54,12 +59,6 @@ var Arrive = (function(window, $, undefined) {
 
         if (registrationData && registrationData.callback && mutationEvents) {
           mutationEvents.addTimeoutHandler(registrationData.target, registrationData.selector, registrationData.callback, registrationData.options, registrationData.data);
-        }
-
-        if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length == 1) {
-          // unbind event after first callback as onceOnly is true.
-          registrationData.me.unbindEventWithSelectorAndCallback.call(
-            registrationData.target, registrationData.selector, registrationData.callback);
         }
       },
       // traverse through all descendants of a node to check if event should be fired for any descendant
@@ -405,7 +404,8 @@ var Arrive = (function(window, $, undefined) {
   var LeaveEvents = function() {
     // Default options for 'leave' event
     var leaveDefaultOptions = {
-      timeout: 0  // default 0 (no timeout)
+      onceOnly: false,
+      timeout: 0,  // default 0 (no timeout)
     };
 
     function getLeaveObserverConfig() {
@@ -492,3 +492,4 @@ var Arrive = (function(window, $, undefined) {
   return Arrive;
 
 })(window, typeof jQuery === 'undefined' ? null : jQuery, undefined);
+
