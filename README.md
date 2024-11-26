@@ -19,6 +19,15 @@ Node.js users can install using npm:
 $ npm install arrive --save
 ```
 
+## Features
+- **DOM Element Creation Detection**: Watch for new elements being added to the DOM
+- **DOM Element Removal Detection**: Monitor when elements are removed from the DOM
+- **Attribute Modification Support**: Optional detection of elements that match selectors after attribute changes
+- **Flexible Options**: Customize behavior with options like `onceOnly`, `existing`, and `timeout`
+- **No Dependencies**: Standalone library with zero dependencies
+- **Modern Browser Support**: Uses MutationObserver API for efficient DOM monitoring
+- **Small Footprint**: Lightweight implementation for minimal performance impact
+
 ## Usage
 ### Watch for elements creation
 Use `arrive` event to watch for elements creation:
