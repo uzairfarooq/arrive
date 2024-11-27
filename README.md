@@ -13,7 +13,6 @@ A lightweight JS library for watching DOM element creation and removal using [Mu
 
 ```bash
 npm install arrive --save   # Using NPM
-bower install arrive --save # Using Bower
 ```
 Or [download arrive.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js) directly.
 
