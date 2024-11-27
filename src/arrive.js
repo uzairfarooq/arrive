@@ -455,6 +455,9 @@ var Arrive = (function(window, $, undefined) {
       if (callback) {
         mutationBindEvent.call(this, selector, options, callback);
       } else {
+        // For promise and async support, we can only do onceOnly=true
+        options.onceOnly = true;
+
         var a = this;
         return new Promise(resolve => mutationBindEvent.call(a, selector, options, resolve));
       }
