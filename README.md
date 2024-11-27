@@ -37,7 +37,17 @@ document.querySelectorAll(".box").arrive(".test-elem", function(newElem) {
 });
 ```
 
-#### Options
+### Promise-based Usage
+> **Important:** Promise-based syntax resolves only for the first matching element. For monitoring multiple or continuous element creation, use the callback approach described above.
+> 
+> Note: There's no need to use the `onceOnly` option with Promise-based usage as Promises inherently resolve only once.
+
+```javascript
+var newElem = await document.arrive(".test-elem");
+// do stuff with the element
+```
+
+### Options
 The `arrive` event accepts an optional configuration object:
 
 ```javascript
