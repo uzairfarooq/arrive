@@ -1,6 +1,6 @@
 {
   "name": "arrive",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Watch for DOM elements creation and removal.",
   "main": "src/arrive.js",
   "keywords": [
