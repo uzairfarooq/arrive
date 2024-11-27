@@ -363,7 +363,7 @@ var Arrive = (function(window, $, undefined) {
     // override bindEvent function
     arriveEvents.bindEvent = function(selector, arg2, arg3) {
 
-      var options = (typeof arg2 === 'object') ? utils.mergeArrays(arriveDefaultOptions, arg2) : arriveDefaultOptions;
+      var options = (typeof arg2 === 'object') ? utils.mergeArrays(arriveDefaultOptions, arg2) : { ...arriveDefaultOptions };
       var callback = (typeof arg3 === 'function') ? arg3 : (typeof arg2 === 'function') ? arg2 : undefined;
       var elements = utils.toElementsArray(this);
 
@@ -449,7 +449,7 @@ var Arrive = (function(window, $, undefined) {
     // override bindEvent function
     leaveEvents.bindEvent = function(selector, arg2, arg3) {
 
-      var options = (typeof arg2 === 'object') ? utils.mergeArrays(leaveDefaultOptions, arg2) : leaveDefaultOptions;
+      var options = (typeof arg2 === 'object') ? utils.mergeArrays(leaveDefaultOptions, arg2) : { ...leaveDefaultOptions };
       var callback = (typeof arg3 === 'function') ? arg3 : (typeof arg2 === 'function') ? arg2 : undefined;
 
       if (callback) {
