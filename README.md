@@ -1,129 +1,141 @@
 # arrive.js
+[![CDNJS version](https://img.shields.io/cdnjs/v/arrive.svg)](https://cdnjs.com/libraries/arrive)
 
-arrive.js provides events to watch for DOM elements creation and removal. It makes use of [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver) internally.
+A lightweight JS library for watching DOM element creation and removal using [Mutation Observers](https://developer.mozilla.org/en/docs/Web/API/MutationObserver).
 
-Download [arrive.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js) (latest)
+## Key Features
+- Watch for element creation and removal in the DOM
+- Zero dependencies
+- Lightweight implementation
+- Flexible configuration options
 
-or use [Bower](http://bower.io/) to install:
-
-```bash
-# install arrive.js and add it to bower.json dependencies
-$ bower install arrive --save
-```
-
-##### Node.js / NPM
-Node.js users can install using npm:
+## Installation
 
 ```bash
-$ npm install arrive --save
+npm install arrive --save   # Using NPM
+bower install arrive --save # Using Bower
 ```
+Or [download arrive.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js) directly.
 
 ## Usage
-**The library does not depend on jQuery, you can replace jQuery elements in the examples below with pure javascript elements and it would work fine.**
-### Watch for elements creation
-Use `arrive` event to watch for elements creation:
+
+### Watch for New Elements
 ```javascript
-// watch for creation of an element which satisfies the selector ".test-elem"
-$(document).arrive(".test-elem", function() {
-    // 'this' refers to the newly created element
-    var $newElem = $(this);
+// Basic usage
+document.arrive(".test-elem", function(newElem) {
+    // newElem is the newly created element
 });
 
-// the above event would watch for creation of element in whole document
-// it's better to be more specific whenever possible, for example
-$(".container-1").arrive(".test-elem", function() {
-    var $newElem = $(this);
+// Watch within a specific container (recommended for better performance)
+document.querySelector(".container").arrive(".test-elem", function(newElem) {
+    // More specific watching
 });
 
-// as of v2.3.2, new element is also passed as argument to the callback function.
-// This is to support arrow functions as 'this' is not bindable in arrow functions.
-$(document).arrive(".test-elem", function(newElem) {
-    var $newElem = $(newElem);
+// you can bind event to multiple elements at once
+// this will bind arrive event to all the elements returned by document.querySelectorAll()
+document.querySelectorAll(".box").arrive(".test-elem", function(newElem) {
 });
 ```
 
-In pure javascript you can call the function on `document`, `window`, any `HTMLElement` or `NodeList`, like this:
-```javascript
-// watch for element creation in the whole HTML document
-document.arrive(".test-elem", function() {
-    // 'this' refers to the newly created element
-});
-
-// this will attach arrive event to all elements in the NodeList
-document.getElementsByClass(".container-1").arrive(".test-elem", function() {
-    // 'this' refers to the newly created element
-});
-```
-
-Make sure to remove listeners when they are no longer needed, it's better for performance:
-```javascript
-// unbind all arrive events on document element
-$(document).unbindArrive();
-
-// unbind all arrive events on document element which are watching for ".test-elem" selector
-$(document).unbindArrive(".test-elem");
-
-// unbind only a specific callback
-$(document).unbindArrive(callbackFunc);
-
-// unbind only a specific callback on ".test-elem" selector
-$(document).unbindArrive(".test-elem", callbackFunc);
-
-// unbind all arrive events
-Arrive.unbindAllArrive();
-```
-
-#### Options
-As of v2.0 `arrive` event accepts an optional `options` object as 2nd argument. Options object consists of following:
-```javascript
-var options = {
-    fireOnAttributesModification: boolean, // Defaults to false. Setting it to true would make arrive event fire on existing elements which start to satisfy selector after some modification in DOM attributes (an arrive event won't fire twice for a single element even if the option is true). If false, it'd only fire for newly created elements.
-    onceOnly: boolean                      // Defaults to false. Setting it to true would ensure that registered callbacks fire only once. No need to unbind the event if the attribute is set to true, it'll automatically unbind after firing once.
-    existing: boolean                      // Defaults to false. Setting it to true would ensure that the registered callback is fired for the elements that already exist in the DOM and match the selector. If options.onceOnly is set, the callback is only called once with the first element matching the selector.
-};
-```
-Example:
-```javascript
-$(document).arrive(".test-elem", {fireOnAttributesModification: true}, function() {
-    // 'this' refers to the newly created element
-    var $newElem = $(this);
-});
-```
-
-### Watch for elements removal
-Use `leave` event to watch for elements removal.
-The first arugument to leave must not be a [descendent](https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors) or [child](https://developer.mozilla.org/en-US/docs/Web/CSS/Child_selectors) selector i.e. you cannot pass `.page .test-elem`, instead, pass `.test-elem`. It's because of a limitation in MutationObserver's api.
+### Promise-based Usage
+> **Important:** Promise-based syntax resolves only for the first matching element. For monitoring multiple or continuous element creation, use the callback approach described above.
 
 ```javascript
-// watch for removal of an element which satisfies the selector ".test-elem"
-$(".container-1").leave(".test-elem", function() {
-    var $removedElem = $(this);
-});
-```
-
-You can unbind the `leave` event in the same way as `arrive` event, using `unbindLeave` function i.e:
-
-```javascript
-// unbind all leave events on document element
-$(document).unbindLeave();
-
-// unbind all leave events
-Arrive.unbindAllLeave();
-```
-
-### Async/Await and Promise Support
-`Warning:` You can only listen for `one` event at a time this way. If you need to handle events continually, then use a callback instead.
-
-Example with Async/Await:
-```javascript
-var $newElem = await arrive(".test-elem");
+var newElem = await arrive(".test-elem");
 // do stuff with the element
 ```
 
-Example with Promise.then:
+#### Options
+The `arrive` event accepts an optional configuration object:
+
 ```javascript
-arrive(".test-elem").then($newElem => {
-    // do stuff with the element
+{
+    // Watch for changes to existing elements' attributes
+    fireOnAttributesModification: false,    
+
+    // Fire callback only once, then auto-unbind
+    onceOnly: false,                        
+
+    // Fire callback for elements that already exist in the DOM
+    existing: false,                        
+
+    // Call callback with null after specified milliseconds and Auto-unbind  (0 = disabled)
+    timeout: 0                              
+}
+```
+
+Example:
+```javascript
+document.arrive(".test-elem", {
+    fireOnAttributesModification: true,  // Watch for attribute changes
+    existing: true,                      // Include existing elements
+    onceOnly: true,                      // Fire callback only once
+    timeout: 5000                        // Auto-unbind after 5 seconds call callback with null
+}, (newElem) => {
+    console.log(newElem);
+});
+```
+
+### Watch for Elements Removal
+Use the `leave` event to detect when elements are removed from the DOM.
+
+> **Important:** Due to MutationObserver API limitations, the selector must be direct (e.g., `.test-elem`) and cannot use descendant or child combinators (e.g., `.page .test-elem` is not allowed).
+
+```javascript
+// Watch for element removal
+document.querySelector(".container-1").leave(".test-elem", function(removedElem) {
+    // removedElem is the element that was just removed
+});
+
+// With options
+document.querySelector(".container-1").leave(".test-elem", {
+    onceOnly: true,    // Fire once per element
+    timeout: 5000      // Auto-unbind after 5 seconds
+}, function(removedElem) {
+    // removedElem is the element that was just removed
+});
+```
+
+### Unbinding Event Listeners
+For better performance, make sure to remove listeners when they are no longer needed:
+
+```javascript
+// unbind all arrive events on document element
+document.unbindArrive();
+
+// unbind all arrive events on a specific element
+document.querySelector(".box").unbindArrive();
+
+// unbind all arrive events on document element which are watching for ".test-elem" selector
+document.unbindArrive(".test-elem");
+
+// unbind only a specific callback
+document.unbindArrive(callbackFunc);
+
+// unbind only a specific callback on ".test-elem" selector
+document.unbindArrive(".test-elem", callbackFunc);
+
+// unbind all arrive events (registered on any element)
+Arrive.unbindAllArrive();
+
+// Unbind all leave events on document element
+document.unbindLeave();
+
+// Unbind all leave events (registered on any element)
+Arrive.unbindAllLeave();
+```
+
+## jQuery Support
+If you use jQuery, you can call all arrive functions on jQuery elements as well:
+```javascript
+// watch for element creation in the whole HTML document
+$(document).arrive(".test-elem", function(newElem) {
+  // Note: newElem is a javascript element not a jQuery element
+});
+
+// this will attach arrive event to all elements returned by $(".container-1")
+$(".container-1").arrive(".test-elem", function(newElem) {
+  // Note: newElem is a javascript element not a jQuery element
 });
 ```
 
@@ -155,6 +167,9 @@ If you want to contribute to arrive, here is the workflow you should use:
 8. Submit a pull request from your repo back to the original repository.
 9. Once it is accepted, remember to pull those changes back into your develop branch!
 
+#### Some features/bugs you can send pull requests for
+- [#70](https://github.com/uzairfarooq/arrive/issues/70): Add Typescript types to the project
+- [#69](https://github.com/uzairfarooq/arrive/issues/69): Option to watch for text change
 
 **Keywords**
 
