@@ -4,7 +4,7 @@
 
 /*
  * arrive.js
- * v2.5.1
+ * v2.5.2
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
