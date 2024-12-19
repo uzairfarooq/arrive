@@ -4,7 +4,7 @@
 
 /*
  * arrive.js
- * v2.5.1
+ * v2.5.2
  * https://github.com/uzairfarooq/arrive
  * MIT licensed
  *
@@ -41,8 +41,9 @@ var Arrive = (function(window, $, undefined) {
         };
       },
       callCallbacks: function(callbacksToBeCalled, registrationData, mutationEvents) {
-        // firedElems check because firedElems are not added in case of leave events
-        if (registrationData && registrationData.options.onceOnly && registrationData.firedElems.length <= 1) {
+        if (!callbacksToBeCalled.length) return;
+
+        if (registrationData && registrationData.options.onceOnly) {
           // as onlyOnce param is true, make sure we fire the event for only one item
           callbacksToBeCalled = [callbacksToBeCalled[0]];
 
