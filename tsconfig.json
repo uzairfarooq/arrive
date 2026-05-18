@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "ES2017",
+		"module": "ESNext",
+		"lib": ["ES2017", "DOM"],
+		"moduleResolution": "bundler",
+		"strict": true,
+		"noEmit": true,
+		"paths": {
+			"arrive": ["."]
+		}
+	},
+	"include": ["tests/test.ts"]
+}

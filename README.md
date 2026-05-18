@@ -13,13 +13,16 @@ A lightweight JS library for watching DOM element creation and removal using [Mu
 
 ```bash
 npm install arrive --save   # Using NPM
+yarn add arrive             # Using Yarn
+pnpm add arrive             # Using PNPM
+bun add arrive              # Using Bun
 ```
 Or [download arrive.min.js](https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js) directly.
 
 ## Usage
 
 ### Watch for New Elements
-```javascript
+```typescript
 // Basic usage
 document.arrive(".test-elem", function(newElem) {
     // newElem is the newly created element
@@ -41,7 +44,7 @@ document.querySelectorAll(".box").arrive(".test-elem", function(newElem) {
 > 
 > Note: There's no need to use the `onceOnly` option with Promise-based usage as Promises inherently resolve only once.
 
-```javascript
+```typescript
 var newElem = await document.arrive(".test-elem");
 // do stuff with the element
 ```
@@ -49,7 +52,7 @@ var newElem = await document.arrive(".test-elem");
 ### Options
 The `arrive` event accepts an optional configuration object:
 
-```javascript
+```typescript
 {
     // Watch for changes to existing elements' attributes
     fireOnAttributesModification: false,    
@@ -66,7 +69,7 @@ The `arrive` event accepts an optional configuration object:
 ```
 
 Example:
-```javascript
+```typescript
 document.arrive(".test-elem", {
     fireOnAttributesModification: true,  // Watch for attribute changes
     existing: true,                      // Include existing elements
@@ -82,7 +85,7 @@ Use the `leave` event to detect when elements are removed from the DOM.
 
 > **Important:** Due to MutationObserver API limitations, the selector must be direct (e.g., `.test-elem`) and cannot use descendant or child combinators (e.g., `.page .test-elem` is not allowed).
 
-```javascript
+```typescript
 // Watch for element removal
 document.querySelector(".container-1").leave(".test-elem", function(removedElem) {
     // removedElem is the element that was just removed
@@ -100,7 +103,7 @@ document.querySelector(".container-1").leave(".test-elem", {
 ### Unbinding Event Listeners
 For better performance, make sure to remove listeners when they are no longer needed:
 
-```javascript
+```typescript
 // unbind all arrive events on document element
 document.unbindArrive();
 
@@ -128,7 +131,7 @@ Arrive.unbindAllLeave();
 
 ## jQuery Support
 If you use jQuery, you can call all arrive functions on jQuery elements as well:
-```javascript
+```typescript
 // watch for element creation in the whole HTML document
 $(document).arrive(".test-elem", function(newElem) {
   // Note: newElem is a javascript element not a jQuery element
@@ -169,7 +172,6 @@ If you want to contribute to arrive, here is the workflow you should use:
 9. Once it is accepted, remember to pull those changes back into your develop branch!
 
 #### Some features/bugs you can send pull requests for
-- [#70](https://github.com/uzairfarooq/arrive/issues/70): Add Typescript types to the project
 - [#69](https://github.com/uzairfarooq/arrive/issues/69): Option to watch for text change
 
 **Keywords**
